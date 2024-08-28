@@ -1,0 +1,702 @@
+{
+    "swagger": "3.0",
+    "info": {
+        "title": "Covoiturage API",
+        "description": "API pour la gestion du covoiturage.",
+        "version": "1.0.0"
+    },
+    "host": "localhost:3000/api",
+    "basePath": "/",
+    "schemes": [
+        "http"
+    ],
+    
+    "paths": {
+        "/users": {
+            "get": {
+                "summary": "Obtenir tous les utilisateurs",
+                "responses": {
+                    "200": {
+                        "description": "Liste des utilisateurs",
+                        "schema": {
+                            "$ref": "#/definitions/BaseResponse",
+                            "properties": {
+                                "data": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/definitions/User"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "summary": "Créer un nouvel utilisateur",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "user",
+                        "description": "Informations de l'utilisateur",
+                        "schema": {
+                            "$ref": "#/definitions/User"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Utilisateur créé avec succès",
+                        "schema": {
+                            "$ref": "#/definitions/BaseResponse",
+                            "properties": {
+                                "data": {
+                                    "$ref": "#/definitions/User"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{userId}": {
+            "put": {
+                "summary": "Mettre à jour un utilisateur",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "userId",
+                        "required": true,
+                        "type": "string",
+                        "description": "Identifiant de l'utilisateur"
+                    },
+                    {
+                        "in": "body",
+                        "name": "user",
+                        "description": "Informations mises à jour de l'utilisateur",
+                        "schema": {
+                            "$ref": "#/definitions/User"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Utilisateur mis à jour avec succès",
+                        "schema": {
+                            "$ref": "#/definitions/BaseResponse",
+                            "properties": {
+                                "data": {
+                                    "$ref": "#/definitions/User"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "summary": "Supprimer un utilisateur",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "userId",
+                        "required": true,
+                        "type": "string",
+                        "description": "Identifiant de l'utilisateur"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Utilisateur supprimé avec succès",
+                        "schema": {
+                            "$ref": "#/definitions/BaseResponse",
+                            "properties": {
+                                "messages": {
+                                    "type": "string",
+                                    "example": "Utilisateur supprimé avec succès"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/users/upload": {
+            "post": {
+                "summary": "Télécharger une photo de profil",
+                "parameters": [
+                    {
+                        "in": "formData",
+                        "name": "photo",
+                        "type": "file",
+                        "description": "Photo de profil de l'utilisateur"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Fichier téléchargé avec succès",
+                        "schema": {
+                            "$ref": "#/definitions/BaseResponse",
+                            "properties": {
+                                "data": {
+                                    "type": "object",
+                                    "properties": {
+                                        "path": {
+                                            "type": "string",
+                                            "description": "Chemin du fichier téléchargé"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/login": {
+            "post": {
+                "summary": "Connexion d'un utilisateur",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "credentials",
+                        "description": "Informations de connexion",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "email": {
+                                    "type": "string"
+                                },
+                                "password": {
+                                    "type": "string"
+                                }
+                            },
+                            "required": [
+                                "email",
+                                "password"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Connexion réussie",
+                        "schema": {
+                            "$ref": "#/definitions/BaseResponse",
+                            "properties": {
+                                "data": {
+                                    "type": "object",
+                                    "properties": {
+                                        "token": {
+                                            "type": "string",
+                                            "description": "Token d'authentification"
+                                        },
+                                        "user": {
+                                            "$ref": "#/definitions/User"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Échec de la connexion",
+                        "schema": {
+                            "$ref": "#/definitions/BaseResponse",
+                            "properties": {
+                                "messages": {
+                                    "type": "string",
+                                    "example": "Échec de la connexion"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/logout": {
+            "post": {
+                "summary": "Déconnexion de l'utilisateur",
+                "responses": {
+                    "200": {
+                        "description": "Déconnexion réussie",
+                        "schema": {
+                            "$ref": "#/definitions/BaseResponse",
+                            "properties": {
+                                "messages": {
+                                    "type": "string",
+                                    "example": "Déconnexion réussie"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/trips": {
+            "get": {
+                "summary": "Obtenir tous les trajets",
+                "responses": {
+                    "200": {
+                        "description": "Liste des trajets",
+                        "schema": {
+                            "$ref": "#/definitions/BaseResponse",
+                            "properties": {
+                                "data": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/definitions/Trip"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "summary": "Créer un nouveau trajet",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "trip",
+                        "description": "Informations du trajet",
+                        "schema": {
+                            "$ref": "#/definitions/Trip"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Trajet créé avec succès",
+                        "schema": {
+                            "$ref": "#/definitions/BaseResponse",
+                            "properties": {
+                                "data": {
+                                    "$ref": "#/definitions/Trip"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/trips/{tripId}": {
+            "put": {
+                "summary": "Mettre à jour un trajet",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "tripId",
+                        "required": true,
+                        "type": "string",
+                        "description": "Identifiant du trajet"
+                    },
+                    {
+                        "in": "body",
+                        "name": "trip",
+                        "description": "Informations mises à jour du trajet",
+                        "schema": {
+                            "$ref": "#/definitions/Trip"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Trajet mis à jour avec succès",
+                        "schema": {
+                            "$ref": "#/definitions/BaseResponse",
+                            "properties": {
+                                "data": {
+                                    "$ref": "#/definitions/Trip"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "summary": "Supprimer un trajet",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "tripId",
+                        "required": true,
+                        "type": "string",
+                        "description": "Identifiant du trajet"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Trajet supprimé avec succès",
+                        "schema": {
+                            "$ref": "#/definitions/BaseResponse",
+                            "properties": {
+                                "messages": {
+                                    "type": "string",
+                                    "example": "Trajet supprimé avec succès"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/trips/{tripId}/orders": {
+            "post": {
+                "summary": "Créer une commande pour un trajet",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "tripId",
+                        "required": true,
+                        "type": "string",
+                        "description": "Identifiant du trajet"
+                    },
+                    {
+                        "in": "body",
+                        "name": "order",
+                        "description": "Informations de la commande",
+                        "schema": {
+                            "$ref": "#/definitions/Order"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Commande créée avec succès",
+                        "schema": {
+                            "$ref": "#/definitions/BaseResponse",
+                            "properties": {
+                                "data": {
+                                    "$ref": "#/definitions/Order"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/orders/{orderId}": {
+            "put": {
+                "summary": "Mettre à jour une commande",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "orderId",
+                        "required": true,
+                        "type": "string",
+                        "description": "Identifiant de la commande"
+                    },
+                    {
+                        "in": "body",
+                        "name": "order",
+                        "description": "Informations mises à jour de la commande",
+                        "schema": {
+                            "$ref": "#/definitions/Order"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Commande mise à jour avec succès",
+                        "schema": {
+                            "$ref": "#/definitions/BaseResponse",
+                            "properties": {
+                                "data": {
+                                    "$ref": "#/definitions/Order"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "summary": "Supprimer une commande",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "orderId",
+                        "required": true,
+                        "type": "string",
+                        "description": "Identifiant de la commande"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Commande supprimée avec succès",
+                        "schema": {
+                            "$ref": "#/definitions/BaseResponse",
+                            "properties": {
+                                "messages": {
+                                    "type": "string",
+                                    "example": "Commande supprimée avec succès"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/orders/{orderId}/driver-response": {
+            "post": {
+                "summary": "Répondre à une commande en tant que conducteur",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "orderId",
+                        "required": true,
+                        "type": "string",
+                        "description": "Identifiant de la commande"
+                    },
+                    {
+                        "in": "body",
+                        "name": "response",
+                        "description": "Réponse du conducteur",
+                        "schema": {
+                            "$ref": "#/definitions/DriverResponse"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Réponse du conducteur enregistrée avec succès",
+                        "schema": {
+                            "$ref": "#/definitions/BaseResponse",
+                            "properties": {
+                                "data": {
+                                    "$ref": "#/definitions/DriverResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "BaseResponse": {
+            "type": "object",
+            "properties": {
+                "status": {
+                    "type": "string",
+                    "description": "Code de statut de la réponse"
+                },
+                "message": {
+                    "type": "string",
+                    "description": "Message de réponse"
+                },
+                "data": {
+                    "type": "object",
+                    "description": "Données de la réponse"
+                }
+            }
+        },
+        "User": {
+            "type": "object",
+            "properties": {
+                "userId": {
+                    "type": "string",
+                    "description": "Identifiant unique de l'utilisateur"
+                },
+                "username": {
+                    "type": "string",
+                    "description": "Nom d'utilisateur"
+                },
+                "email": {
+                    "type": "string",
+                    "description": "Adresse e-mail"
+                },
+                "passwordHash": {
+                    "type": "string",
+                    "description": "Mot de passe haché"
+                },
+                "role": {
+                    "type": "string",
+                    "description": "Rôle de l'utilisateur"
+                },
+                "photoUrl": {
+                    "type": "string",
+                    "description": "URL de la photo de profil"
+                },
+                "contactNumber": {
+                    "type": "string",
+                    "description": "Numéro de téléphone"
+                },
+                "address": {
+                    "type": "string",
+                    "description": "Adresse physique"
+                },
+                "bio": {
+                    "type": "string",
+                    "description": "Biographie"
+                },
+                "dateOfBirth": {
+                    "type": "string",
+                    "format": "date",
+                    "description": "Date de naissance"
+                },
+                "createdAt": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Date de création du compte"
+                },
+                "updatedAt": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Date de dernière mise à jour"
+                },
+                "lastLogin": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Dernière connexion"
+                },
+                "isActive": {
+                    "type": "boolean",
+                    "description": "Statut actif de l'utilisateur"
+                },
+                "verificationStatus": {
+                    "type": "string",
+                    "description": "Statut de vérification de l'utilisateur"
+                }
+            },
+            "required": [
+                "userId",
+                "username",
+                "email",
+                "passwordHash",
+                "role"
+            ]
+        },
+        "Trip": {
+            "type": "object",
+            "properties": {
+                "tripId": {
+                    "type": "string",
+                    "description": "Identifiant unique du trajet"
+                },
+                "departureLocation": {
+                    "type": "string",
+                    "description": "Lieu de départ"
+                },
+                "destinationLocation": {
+                    "type": "string",
+                    "description": "Lieu de destination"
+                },
+                "departureTime": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Heure de départ"
+                },
+                "arrivalTime": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Heure d'arrivée"
+                },
+                "price": {
+                    "type": "number",
+                    "format": "float",
+                    "description": "Prix du trajet"
+                },
+                "availableSeats": {
+                    "type": "integer",
+                    "description": "Nombre de sièges disponibles"
+                },
+                "driverId": {
+                    "type": "string",
+                    "description": "Identifiant du conducteur"
+                },
+                "createdAt": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Date de création du trajet"
+                },
+                "updatedAt": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Date de dernière mise à jour du trajet"
+                }
+            },
+            "required": [
+                "tripId",
+                "departureLocation",
+                "destinationLocation",
+                "departureTime",
+                "price",
+                "availableSeats",
+                "driverId"
+            ]
+        },
+        "Order": {
+            "type": "object",
+            "properties": {
+                "orderId": {
+                    "type": "string",
+                    "description": "Identifiant unique de la commande"
+                },
+                "tripId": {
+                    "type": "string",
+                    "description": "Identifiant du trajet"
+                },
+                "userId": {
+                    "type": "string",
+                    "description": "Identifiant de l'utilisateur"
+                },
+                "status": {
+                    "type": "string",
+                    "description": "Statut de la commande"
+                },
+                "createdAt": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Date de création de la commande"
+                },
+                "updatedAt": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Date de dernière mise à jour de la commande"
+                }
+            },
+            "required": [
+                "orderId",
+                "tripId",
+                "userId",
+                "status"
+            ]
+        },
+        "DriverResponse": {
+            "type": "object",
+            "properties": {
+                "responseId": {
+                    "type": "string",
+                    "description": "Identifiant unique de la réponse du conducteur"
+                },
+                "orderId": {
+                    "type": "string",
+                    "description": "Identifiant de la commande"
+                },
+                "driverId": {
+                    "type": "string",
+                    "description": "Identifiant du conducteur"
+                },
+                "status": {
+                    "type": "string",
+                    "description": "Statut de la réponse du conducteur"
+                },
+                "message": {
+                    "type": "string",
+                    "description": "Message du conducteur"
+                },
+                "createdAt": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Date de création de la réponse du conducteur"
+                }
+            },
+            "required": [
+                "responseId",
+                "orderId",
+                "driverId",
+                "status"
+            ]
+        }
+    }
+}

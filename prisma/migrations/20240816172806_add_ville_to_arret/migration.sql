@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Arret" ADD COLUMN     "ville" TEXT NOT NULL DEFAULT 'AGBOVILLE';

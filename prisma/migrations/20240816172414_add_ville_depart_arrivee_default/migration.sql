@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Trajet" ADD COLUMN     "ville_arrivee" TEXT NOT NULL DEFAULT 'AGBOVILLE',
+ADD COLUMN     "ville_depart" TEXT NOT NULL DEFAULT 'ABIDJAN';

@@ -1,0 +1,4465 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Covoiturage API",
+        "description": "API pour la gestion du covoiturage.",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:4000/api/",
+            "description": "Serveur de développement"
+        }
+    ],
+
+    "paths": {
+
+        "/users": {
+            "post": {
+                "summary": "Créer un utilisateur",
+                "description": "Créer un nouvel utilisateur avec une photo facultative.",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "username": {
+                                        "type": "string",
+                                        "example": "john_doe"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "example": "john@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "password123"
+                                    },
+                                    "role": {
+                                        "type": "string",
+                                        "example": "USER"
+                                    },
+                                    "currency_id": {
+                                        "type": "string",
+                                        "example": "FCFA"
+                                    },
+                                    "photo": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                },
+                                "required": [
+                                    "username",
+                                    "email",
+                                    "password",
+                                    "role"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Utilisateur créé avec succès.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponseUser"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Erreur dans la création de l'utilisateur.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erreur serveur interne.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+
+        "users/{id}": {
+            "put": {
+                "summary": "Mettre à jour un utilisateur",
+                "description": "Mettre à jour les informations d'un utilisateur existant avec une photo facultative.",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": false,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "username": {
+                                        "type": "string"
+                                    },
+                                    "email": {
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "type": "string"
+                                    },
+                                    "role": {
+                                        "type": "string"
+                                    },
+                                    "photo": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Utilisateur mis à jour avec succès.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponseUser"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Erreur dans la mise à jour de l'utilisateur.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Utilisateur non trouvé.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erreur serveur interne.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+
+        "/users/": {
+            "get": {
+                "summary": "Obtenir tous les utilisateurs",
+                "description": "Récupérer une liste de tous les utilisateurs.",
+                "responses": {
+                    "200": {
+                        "description": "Liste des utilisateurs récupérée avec succès.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponseArrayUser"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erreur serveur interne.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+
+        "/users/{id}": {
+            "get": {
+                "summary": "Obtenir un utilisateur par ID",
+                "description": "Récupérer les détails d'un utilisateur spécifique.",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Utilisateur récupéré avec succès.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponseUser"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Utilisateur non trouvé.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erreur serveur interne.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "summary": "Supprimer un utilisateur",
+                "description": "Supprimer un utilisateur spécifique par ID.",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Utilisateur supprimé avec succès.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Utilisateur non trouvé.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erreur serveur interne.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+
+        "/users/{id}/stats": {
+            
+            "get": {
+                "summary": "Obtenir un utilisateur par ID",
+                "description": "Récupérer les détails d'un utilisateur spécifique.",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Utilisateur récupéré avec succès.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponseUser"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Utilisateur non trouvé.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erreur serveur interne.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+
+        "/users/{id}/root/detail": {
+            
+            "get": {
+                "summary": "Obtenir un utilisateur par ID",
+                "description": "Récupérer les détails d'un utilisateur spécifique.",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Utilisateur récupéré avec succès.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponseUser"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Utilisateur non trouvé.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erreur serveur interne.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+
+        "/settings/{id}": {
+            
+            "get": {
+                "summary": "les parametres de l'utilisateur compte, wallet,véhicule",
+                "description": "Récupérer parametre spécifique de l'utilisateur compte, wallet,véhicule.",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Parametre récupéré avec succès.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponseUser"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Parametre non trouvé.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erreur serveur interne.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+
+
+        "/auth/login": {
+            "post": {
+                "summary": "Connexion de l'utilisateur",
+                "description": "Authentifier un utilisateur et obtenir un token JWT.",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "example": "john@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "password123"
+                                    }
+                                },
+                                "required": [
+                                    "email",
+                                    "password"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Connexion réussie.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "token": {
+                                            "type": "string",
+                                            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Erreur dans les informations d'identification.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erreur serveur interne.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+
+        "/auth/logout": {
+            "post": {
+                "summary": "Déconnexion de l'utilisateur",
+                "description": "Déconnecter l'utilisateur (côté client supprime généralement le token).",
+                "responses": {
+                    "200": {
+                        "description": "Déconnexion réussie.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erreur serveur interne.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+
+    
+        "/trajets": {
+
+            "post": {
+                "summary": "Créer un trajet",
+                "description": "Créer un nouveau trajet avec les informations fournies.",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "id": {
+                                        "type": "string"
+                                    },
+                                    "utilisateur_id": {
+                                        "type": "string",
+                                        "example": "0b28de33-87f2-49d5-b6dc-fb046f61f675"
+                                    },
+                                    "point_depart": {
+                                        "type": "object",
+                                        "properties": {
+                                            "lat": {
+                                                "type": "number",
+                                                "format": "float",
+                                                "example": 5.359952
+                                            },
+                                            "lon": {
+                                                "type": "number",
+                                                "format": "float",
+                                                "example": -4.008256
+                                            }
+                                        },
+                                        "required": [
+                                            "lat",
+                                            "lon"
+                                        ]
+                                    },
+                                    "ville_depart": {
+                                        "type": "string",
+                                        "example": "ABIDJAN"
+                                    },
+                                    "point_arrivee": {
+                                        "type": "object",
+                                        "properties": {
+                                            "lat": {
+                                                "type": "number",
+                                                "format": "float",
+                                                "example": 6.8184
+                                            },
+                                            "lon": {
+                                                "type": "number",
+                                                "format": "float",
+                                                "example": -5.2754
+                                            }
+                                        },
+                                        "required": [
+                                            "lat",
+                                            "lon"
+                                        ]
+                                    },
+                                    "ville_arrivee": {
+                                        "type": "string",
+                                        "example": "AGBOVILLE"
+                                    },
+                                    "temps_depart_prevu": {
+                                        "type": "string",
+                                        "format": "date-time",
+                                        "example": "2024-08-22T14:30:00Z"
+                                    },
+                                    "temps_arrivee_prevu": {
+                                        "type": "string",
+                                        "format": "date-time",
+                                        "example": "2024-08-22T16:30:00Z"
+                                    },
+                                    "duree_estimee": {
+                                        "type": "integer",
+                                        "example": 120
+                                    },
+                                    "distance_estimee": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 20
+                                    },
+                                    "etat_trajet": {
+                                        "type": "string",
+                                        "example": "pending"
+                                    },
+                                    "mode_transport": {
+                                        "type": "string",
+                                        "example": "Voiture"
+                                    },
+                                    "price": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 5000,
+                                        "nullable": true
+                                    },
+                                    "nombre_de_places": {
+                                        "type": "integer",
+                                        "example": 4
+                                    },
+
+                                    "vehicule_id": {
+                                        "type": "string",
+                                        "example": "47dcd5ab-5153-48f8-b87d-8cd7932d423e"
+                                    }
+                                },
+                                "required": [
+                                    "utilisateur_id",
+                                    "point_depart",
+                                    "ville_depart",
+                                    "point_arrivee",
+                                    "ville_arrivee",
+                                    "temps_depart_prevu",
+                                    "temps_arrivee_prevu",
+                                    "duree_estimee",
+                                    "distance_estimee",
+                                    "etat_trajet",
+                                    "mode_transport",
+                                    "nombre_de_places",
+                                    "price"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Trajet créé avec succès.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Erreur dans la création du trajet.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erreur serveur interne.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+
+            "get": {
+                "summary": "Obtenir tous les trajets",
+                "description": "Récupérer une liste de tous les trajets.",
+                "responses": {
+                    "200": {
+                        "description": "Liste des trajets récupérée avec succès.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "code": {
+                                            "type": "integer",
+                                            "format": "int32"
+                                        },
+                                        "messages": {
+                                            "type": "string"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/BaseResponse"
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "code",
+                                        "messages",
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erreur serveur interne.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+
+        "/trajets/{id}": {
+
+            "put": {
+                "summary": "Mettre à jour un trajet",
+                "description": "Mettre à jour les informations d'un trajet existant.",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "utilisateur_id": {
+                                        "type": "string",
+                                        "example": "0b28de33-87f2-49d5-b6dc-fb046f61f675"
+                                    },
+                                    "point_depart": {
+                                        "type": "object",
+                                        "properties": {
+                                            "lat": {
+                                                "type": "number",
+                                                "format": "float",
+                                                "example": 48.8566
+                                            },
+                                            "lon": {
+                                                "type": "number",
+                                                "format": "float",
+                                                "example": -48.8566
+                                            }
+                                        },
+                                        "required": [
+                                            "lat",
+                                            "lon"
+                                        ]
+                                    },
+                                    "ville_depart": {
+                                        "type": "string",
+                                        "example": "ABIDJAN"
+                                    },
+                                    "point_arrivee": {
+                                        "type": "object",
+                                        "properties": {
+                                            "lat": {
+                                                "type": "number",
+                                                "format": "float",
+                                                "example": 48.8566
+                                            },
+                                            "lon": {
+                                                "type": "number",
+                                                "format": "float",
+                                                "example": -48.8566
+                                            }
+                                        },
+                                        "required": [
+                                            "lat",
+                                            "lon"
+                                        ]
+                                    },
+                                    "ville_arrivee": {
+                                        "type": "string",
+                                        "example": "AGBOVILLE"
+                                    },
+                                    "temps_depart_prevu": {
+                                        "type": "string",
+                                        "format": "date-time",
+                                        "example": "2024-08-15T14:30:00Z"
+                                    },
+                                    "temps_arrivee_prevu": {
+                                        "type": "string",
+                                        "format": "date-time",
+                                        "example": "2024-08-15T16:30:00Z"
+                                    },
+                                    "duree_estimee": {
+                                        "type": "integer"
+                                    },
+                                    "distance_estimee": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 20
+                                    },
+                                    "etat_trajet": {
+                                        "type": "string",
+                                        "example": "pending"
+                                    },
+                                    "mode_transport": {
+                                        "type": "string",
+                                        "example": "Voiture"
+                                    },
+                                    "price": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 5000,
+                                        "nullable": true
+                                    },
+                                    "nombre_de_places": {
+                                        "type": "integer",
+                                        "example": 4
+                                    },
+                                    "vehicule_id": {
+                                        "type": "string",
+                                        "example": "47dcd5ab-5153-48f8-b87d-8cd7932d423e"
+                                    }
+                                },
+                                "required": [
+                                    "utilisateur_id",
+                                    "point_depart",
+                                    "ville_depart",
+                                    "point_arrivee",
+                                    "ville_arrivee",
+                                    "temps_depart_prevu",
+                                    "temps_arrivee_prevu",
+                                    "duree_estimee",
+                                    "distance_estimee",
+                                    "etat_trajet",
+                                    "mode_transport",
+                                    "nombre_de_places",
+                                    "price"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Trajet mis à jour avec succès.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Erreur dans la mise à jour du trajet.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Trajet non trouvé.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erreur serveur interne.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+
+            "get": {
+                "summary": "Obtenir un trajet par ID",
+                "description": "Récupérer les détails d'un trajet spécifique.",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Trajet récupéré avec succès.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Trajet non trouvé.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erreur serveur interne.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+
+            "delete": {
+                "summary": "Supprimer un trajet",
+                "description": "Supprimer un trajet spécifique par ID.",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Trajet supprimé avec succès.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Trajet non trouvé.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erreur serveur interne.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+
+        "/trajets/{id}/listes": {
+            "get": {
+                "summary": "Obtenir un trajet par ID",
+                "description": "Récupérer les détails d'un trajet spécifique.",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Trajet récupéré avec succès.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Trajet non trouvé.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erreur serveur interne.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+
+        "/search/{trajets}": {
+            "post": {
+                "summary": "Rechercher des trajets",
+                "description": "Rechercher des trajets en fonction des critères fournis comme point de départ, point d'arrivée, temps de départ prévu et nombre de places.",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "point_depart": {
+                                        "type": "object",
+                                        "properties": {
+                                            "lat": {
+                                                "type": "number",
+                                                "format": "float",
+                                                "example": 48.8566
+                                            },
+                                            "lon": {
+                                                "type": "number",
+                                                "format": "float",
+                                                "example": 2.3522
+                                            }
+                                        },
+                                        "required": ["lat", "lon"]
+                                    },
+                                    "point_arrivee": {
+                                        "type": "object",
+                                        "properties": {
+                                            "lat": {
+                                                "type": "number",
+                                                "format": "float",
+                                                "example": 34.0522
+                                            },
+                                            "lon": {
+                                                "type": "number",
+                                                "format": "float",
+                                                "example": -118.2437
+                                            }
+                                        },
+                                        "required": ["lat", "lon"]
+                                    },
+                                    "temps_depart_prevu": {
+                                        "type": "string",
+                                        "format": "date-time",
+                                        "example": "2024-08-15T14:30:00Z"
+                                    },
+                                    "nombre_de_places": {
+                                        "type": "integer",
+                                        "example": 3
+                                    }
+                                },
+                                "required": ["point_depart", "point_arrivee", "temps_depart_prevu", "nombre_de_places"]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Trajets récupérés avec succès.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "code": {
+                                            "type": "integer",
+                                            "format": "int32",
+                                            "example": 200
+                                        },
+                                        "messages": {
+                                            "type": "string",
+                                            "example": "Trajets retrieved successfully"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/BaseRespons"
+                                            },
+                                            "example": [
+                                                {
+                                                    "id": "1",
+                                                    "utilisateur_id": "user123",
+                                                    "point_depart": {
+                                                        "lat": 48.8566,
+                                                        "lon": 2.3522
+                                                    },
+                                                    "point_arrivee": {
+                                                        "lat": 34.0522,
+                                                        "lon": -118.2437
+                                                    },
+                                                    "temps_depart_prevu": "2024-08-15T14:30:00Z",
+                                                    "temps_arrivee_prevu": "2024-08-15T17:00:00Z",
+                                                    "duree_estimee": 150,
+                                                    "distance_estimee": 5600.5,
+                                                    "etat_trajet": "planned",
+                                                    "historique_position": {
+                                                        "points": []
+                                                    },
+                                                    "mode_transport": "car",
+                                                    "price": 75.0,
+                                                    "nombre_de_places": 3,
+                                                    "arrets": [
+                                                        {
+                                                            "nom": "Stop 1"
+                                                        }
+                                                    ],
+                                                    "commandes": []
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "required": ["code", "messages", "data"]
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Erreur de validation des paramètres.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erreur serveur interne.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+
+        "/commandes": {
+
+            "get": {
+                "summary": "Obtenir toutes les commandes",
+                "description": "Récupérer une liste de toutes les commandes.",
+                "responses": {
+                    "200": {
+                        "description": "Liste des commandes récupérée avec succès.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "code": {
+                                            "type": "integer",
+                                            "format": "int32"
+                                        },
+                                        "messages": {
+                                            "type": "string"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/BaseResponse"
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "code",
+                                        "messages",
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erreur serveur interne.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+
+            "post": {
+                "summary": "Créer une commande",
+                "description": "Créer une nouvelle commande avec les informations fournies.",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "trajet_id": {
+                                        "type": "string"
+                                    },
+                                    "utilisateur_id": {
+                                        "type": "string"
+                                    },
+                                    "conducteur_id": {
+                                        "type": "string"
+                                    },
+                                    "point_prise_en_charge": {
+                                        "type": "object",
+                                        "nullable": true
+                                    },
+                                    "point_depose": {
+                                        "type": "object",
+                                        "nullable": true
+                                    },
+                                    "temps_prise_en_charge": {
+                                        "type": "string",
+                                        "format": "date-time"
+                                    },
+                                    "temps_depose": {
+                                        "type": "string",
+                                        "format": "date-time"
+                                    },
+                                    "statut_commande": {
+                                        "type": "string",
+                                        "example": "pending"
+                                    },
+                                    "montant": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "nullable": true
+                                    },
+                                    "mode_paiement": {
+                                        "type": "string",
+                                        "nullable": true
+                                    },
+                                    "commentaires_instructions": {
+                                        "type": "string",
+                                        "nullable": true
+                                    },
+                                    "date_action": {
+                                        "type": "string",
+                                        "format": "date-time",
+                                        "nullable": true
+                                    },
+                                    "historique_statuts": {
+                                        "type": "object",
+                                        "nullable": true
+                                    },
+                                    "evaluations": {
+                                        "type": "object",
+                                        "nullable": true
+                                    }
+                                },
+                                "required": [
+                                    "trajet_id",
+                                    "utilisateur_id",
+                                    "conducteur_id",
+                                    "temps_prise_en_charge",
+                                    "temps_depose",
+                                    "statut_commande"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Commande créée avec succès.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Erreur dans la création de la commande.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erreur serveur interne.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+        },
+
+        "/commandes/{id}": {
+
+            "get": {
+                "summary": "Obtenir une commande par ID",
+                "description": "Récupérer les détails d'une commande spécifique.",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Commande récupérée avec succès.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Commande non trouvée.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erreur serveur interne.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            
+
+            "put": {
+                "summary": "Mettre à jour une commande",
+                "description": "Mettre à jour les informations d'une commande existante.",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "trajet_id": {
+                                        "type": "string"
+                                    },
+                                    "utilisateur_id": {
+                                        "type": "string"
+                                    },
+                                    "conducteur_id": {
+                                        "type": "string"
+                                    },
+                                    "point_prise_en_charge": {
+                                        "type": "object",
+                                        "nullable": true
+                                    },
+                                    "point_depose": {
+                                        "type": "object",
+                                        "nullable": true
+                                    },
+                                    "temps_prise_en_charge": {
+                                        "type": "string",
+                                        "format": "date-time"
+                                    },
+                                    "temps_depose": {
+                                        "type": "string",
+                                        "format": "date-time"
+                                    },
+                                    "statut_commande": {
+                                        "type": "string"
+                                    },
+                                    "montant": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "nullable": true
+                                    },
+                                    "mode_paiement": {
+                                        "type": "string",
+                                        "nullable": true
+                                    },
+                                    "commentaires_instructions": {
+                                        "type": "string",
+                                        "nullable": true
+                                    },
+                                    "date_action": {
+                                        "type": "string",
+                                        "format": "date-time",
+                                        "nullable": true
+                                    },
+                                    "historique_statuts": {
+                                        "type": "object",
+                                        "nullable": true
+                                    },
+                                    "evaluations": {
+                                        "type": "object",
+                                        "nullable": true
+                                    }
+                                },
+                                "required": [
+                                    "trajet_id",
+                                    "utilisateur_id",
+                                    "conducteur_id",
+                                    "temps_prise_en_charge",
+                                    "temps_depose",
+                                    "statut_commande"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Commande mise à jour avec succès.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Erreur dans la mise à jour de la commande.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Commande non trouvée.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erreur serveur interne.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+
+
+            "delete": {
+                "summary": "Supprimer une commande",
+                "description": "Supprimer une commande spécifique par ID.",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Commande supprimée avec succès.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Commande non trouvée.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erreur serveur interne.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+
+
+        "/commndesusers/{id}/one": {
+            "get": {
+                "summary": "Obtenir la dernier commande d'un utilisateur",
+                "description": "Récupérer les détails des commandes spécifique.",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Commande récupérée avec succès.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Commande non trouvée.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erreur serveur interne.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+
+        "/commndesusers/{id}/users/all": {
+
+            "get": {
+                "summary": "Obtenir les commandes du passager",
+                "description": "Récupérer les détails des commandes spécifique.",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Commande récupérée avec succès.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Commande non trouvée.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erreur serveur interne.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+
+
+        "/drivers/{id}/commandes": {
+
+            "get": {
+                "summary": "Obtenir la dernier commande d'un chauffeur",
+                "description": "Récupérer les détails des commandes spécifique.",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Commande récupérée avec succès.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Commande non trouvée.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erreur serveur interne.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+
+        "/drivers/{id}/commandes/history": {
+
+            "get": {
+                "summary": "Obtenir les commandes du chauffeur",
+                "description": "Récupérer les détails des commandes spécifique.",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Commande récupérée avec succès.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Commande non trouvée.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erreur serveur interne.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+
+
+        "/status/{id}": {
+
+            "put": {
+                "summary": "Changer les statut de la commande",
+                "description": "Mettre à jour les statuts des commandes.",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+
+                                    "commandeId": {
+                                        "type": "string",
+                                        "example": "0b28de33-87f2-49d5-b6dc-fb046f61f675"
+                                    },
+                                    "newStatus": {
+                                        "type": "string",
+                                        "example": "validated"
+                                    }
+                                },
+                                "required": [
+                                    "commandeId",
+                                    "newStatus"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Rechargement mis à jour avec succès.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Erreur dans la mise à jour du rechargement.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erreur serveur interne.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+
+            "delete": {
+                "summary": "Supprimer un rechargement",
+                "description": "Supprimer un rechargement spécifique par ID.",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Rechargement supprimé avec succès."
+                    },
+                    "404": {
+                        "description": "Rechargement non trouvé.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erreur serveur interne.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+
+        "/reponseConducteur": {
+            "get": {
+                "summary": "Obtenir toutes les réponses des conducteurs",
+                "description": "Récupérer une liste de toutes les réponses des conducteurs.",
+                "responses": {
+                    "200": {
+                        "description": "Liste des réponses des conducteurs récupérée avec succès.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "code": {
+                                            "type": "integer",
+                                            "format": "int32"
+                                        },
+                                        "messages": {
+                                            "type": "string"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/BaseResponse"
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "code",
+                                        "messages",
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erreur serveur interne.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "summary": "Créer une réponse de conducteur",
+                "description": "Créer une nouvelle réponse de conducteur avec les informations fournies.",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "commande_id": {
+                                        "type": "string"
+                                    },
+                                    "conducteur_id": {
+                                        "type": "string"
+                                    },
+                                    "commentaires": {
+                                        "type": "string"
+                                    },
+                                    "statut_reponse": {
+                                        "type": "string",
+                                        "example": "validated"
+                                    },
+                                    "temps_reponse": {
+                                        "type": "string",
+                                        "format": "date-time"
+                                    }
+                                },
+                                "required": [
+                                    "commande_id",
+                                    "conducteur_id",
+                                    "commentaires",
+                                    "temps_reponse",
+                                    "statut_reponse"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Réponse du conducteur créée avec succès.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Erreur dans la création de la réponse du conducteur.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erreur serveur interne.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+
+        "/reponseConducteur/{id}": {
+            "get": {
+                "summary": "Obtenir une réponse de conducteur par ID",
+                "description": "Récupérer les détails d'une réponse de conducteur spécifique.",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Réponse du conducteur récupérée avec succès.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Réponse du conducteur non trouvée.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erreur serveur interne.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "summary": "Mettre à jour une réponse de conducteur",
+                "description": "Mettre à jour les informations d'une réponse de conducteur existante.",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "commande_id": {
+                                        "type": "string"
+                                    },
+                                    "conducteur_id": {
+                                        "type": "string"
+                                    },
+                                    "commentaires": {
+                                        "type": "string"
+                                    },
+                                    "statut_reponse": {
+                                        "type": "string",
+                                        "example": "validated"
+                                    },
+                                    "temps_reponse": {
+                                        "type": "string",
+                                        "format": "date-time"
+                                    }
+                                },
+                                "required": [
+                                    "commande_id",
+                                    "conducteur_id",
+                                    "commentaires",
+                                    "temps_reponse",
+                                    "statut_reponse"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Réponse du conducteur mise à jour avec succès.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Erreur dans la mise à jour de la réponse du conducteur.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Réponse du conducteur non trouvée.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erreur serveur interne.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "summary": "Supprimer une réponse de conducteur",
+                "description": "Supprimer une réponse de conducteur spécifique par ID.",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Réponse du conducteur supprimée avec succès.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Réponse du conducteur non trouvée.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erreur serveur interne.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+
+        "/arrets": {
+
+        "get": {
+            "summary": "Obtenir tous les arrêts",
+            "description": "Récupérer une liste de tous les arrêts.",
+            "responses": {
+                "200": {
+                    "description": "Liste des arrêts récupérée avec succès.",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "code": {
+                                        "type": "integer",
+                                        "format": "int32"
+                                    },
+                                    "messages": {
+                                        "type": "string"
+                                    },
+                                    "data": {
+                                        "type": "array",
+                                        "items": {
+                                            "$ref": "#/components/schemas/BaseResponse"
+                                        }
+                                    }
+                                },
+                                "required": [
+                                    "code",
+                                    "messages",
+                                    "data"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "500": {
+                    "description": "Erreur serveur interne.",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/BaseResponse"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+
+        "post": {
+            "summary": "Créer un arrêt",
+            "description": "Créer un nouvel arrêt avec les informations fournies.",
+            "requestBody": {
+                "required": true,
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "trajet_id": {
+                                    "type": "string"
+                                },
+
+                                "nom": {
+                                    "type": "object",
+                                    "properties": {
+                                    "lat": {
+                                        "type": "number",
+                                        "format": "float"
+                                    },
+                                    "lon": {
+                                        "type": "number",
+                                        "format": "float"
+                                    }
+                                    }
+                                }
+                            },
+                            "required": [
+                                "trajet_id",
+                                "nom"
+                            ]
+                        }
+                    }
+                }
+            },
+            "responses": {
+                "201": {
+                    "description": "Arrêt créé avec succès.",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/BaseResponse"
+                            }
+                        }
+                    }
+                },
+                "400": {
+                    "description": "Erreur dans la création de l'arrêt.",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/BaseResponse"
+                            }
+                        }
+                    }
+                },
+                "500": {
+                    "description": "Erreur serveur interne.",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/BaseResponse"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        },
+
+        "/arrets/{id}": {
+            "get": {
+                "summary": "Obtenir un arrêt par ID",
+                "description": "Récupérer les détails d'un arrêt spécifique.",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Arrêt récupéré avec succès.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Arrêt non trouvé.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erreur serveur interne.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "summary": "Mettre à jour un arrêt",
+                "description": "Mettre à jour les informations d'un arrêt existant.",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "trajet_id": {
+                                        "type": "string"
+                                    },
+
+                                    "nom": {
+                                        "type": "object",
+                                        "properties": {
+                                        "lat": {
+                                            "type": "number",
+                                            "format": "float"
+                                        },
+                                        "lon": {
+                                            "type": "number",
+                                            "format": "float"
+                                        }
+                                        }
+                                    }
+                                },
+                                "required": [
+                                    "trajet_id",
+                                    "nom"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Arrêt mis à jour avec succès.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Erreur dans la mise à jour de l'arrêt.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Arrêt non trouvé.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erreur serveur interne.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "summary": "Supprimer un arrêt",
+                "description": "Supprimer un arrêt spécifique par ID.",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Arrêt supprimé avec succès.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Arrêt non trouvé.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erreur serveur interne.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+
+        "/vehicule": {
+            
+            "get": {
+                "summary": "Obtenir tous les véhicules",
+                "description": "Récupérer une liste de tous les véhicules.",
+                "responses": {
+                    "200": {
+                        "description": "Liste des véhicules récupérée avec succès.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "code": {
+                                            "type": "integer",
+                                            "format": "int32"
+                                        },
+                                        "messages": {
+                                            "type": "string"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/BaseResponse"
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "code",
+                                        "messages",
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erreur serveur interne.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "summary": "Créer un nouveau véhicule",
+                "description": "Créer un nouveau véhicule avec les informations fournies.",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "utilisateur_id": {
+                                        "type": "string"
+                                    },
+                                    "marque": {
+                                        "type": "string"
+                                    },
+                                    "modele": {
+                                        "type": "string"
+                                    },
+                                    "annee": {
+                                        "type": "integer",
+                                        "format": "int32"
+                                    },
+                                    "plaque": {
+                                        "type": "string"
+                                    },
+                                    "couleur": {
+                                        "type": "string"
+                                    },
+                                    "permis": {
+                                        "type": "string"
+                                    },
+                                    "carte_grise": {
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "utilisateur_id",
+                                    "marque",
+                                    "modele",
+                                    "annee",
+                                    "plaque"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Véhicule créé avec succès.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Erreur dans la création du véhicule.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erreur serveur interne.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+
+        "/vehicule/{id}": {
+            "get": {
+                "summary": "Obtenir un véhicule par ID",
+                "description": "Récupérer les détails d'un véhicule spécifique.",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Véhicule récupéré avec succès.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Véhicule non trouvé.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erreur serveur interne.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "summary": "Mettre à jour un véhicule",
+                "description": "Mettre à jour les informations d'un véhicule existant.",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "utilisateur_id": {
+                                        "type": "string"
+                                    },
+                                    "marque": {
+                                        "type": "string"
+                                    },
+                                    "modele": {
+                                        "type": "string"
+                                    },
+                                    "annee": {
+                                        "type": "integer",
+                                        "format": "int32"
+                                    },
+                                    "plaque": {
+                                        "type": "string"
+                                    },
+                                    "couleur": {
+                                        "type": "string"
+                                    },
+                                    "permis": {
+                                        "type": "string"
+                                    },
+                                    "carte_grise": {
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "utilisateur_id",
+                                    "marque",
+                                    "modele",
+                                    "annee",
+                                    "plaque"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Véhicule mis à jour avec succès.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Erreur dans la mise à jour du véhicule.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Véhicule non trouvé.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erreur serveur interne.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "summary": "Supprimer un véhicule",
+                "description": "Supprimer un véhicule spécifique par ID.",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Véhicule supprimé avec succès.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Véhicule non trouvé.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erreur serveur interne.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+
+        "/faqs": {
+
+        "get": {
+                "summary": "Obtenir toutes les FAQs",
+                "description": "Récupérer une liste de toutes les questions fréquemment posées.",
+                "responses": {
+                    "200": {
+                        "description": "Liste des FAQs récupérée avec succès.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "code": {
+                                            "type": "integer",
+                                            "format": "int32"
+                                        },
+                                        "messages": {
+                                            "type": "string"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/BaseResponse"
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "code",
+                                        "messages",
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erreur serveur interne.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+
+        "post": {
+                "summary": "Créer une nouvelle FAQ",
+                "description": "Créer une nouvelle question fréquemment posée avec la réponse fournie.",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "question": {
+                                        "type": "string"
+                                    },
+                                    "reponse": {
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "question",
+                                    "reponse"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "FAQ créée avec succès.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Erreur dans la création de la FAQ.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erreur serveur interne.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+
+        "/faqs/{id}": {
+            "get": {
+                "summary": "Obtenir une FAQ par ID",
+                "description": "Récupérer les détails d'une question fréquemment posée spécifique.",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "FAQ récupérée avec succès.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "FAQ non trouvée.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erreur serveur interne.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "summary": "Mettre à jour une FAQ",
+                "description": "Mettre à jour les informations d'une question fréquemment posée existante.",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "question": {
+                                        "type": "string"
+                                    },
+                                    "reponse": {
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "question",
+                                    "reponse"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "FAQ mise à jour avec succès.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Erreur dans la mise à jour de la FAQ.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "FAQ non trouvée.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erreur serveur interne.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "summary": "Supprimer une FAQ",
+                "description": "Supprimer une question fréquemment posée spécifique par ID.",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "FAQ supprimée avec succès.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "FAQ non trouvée.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erreur serveur interne.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+
+        "/contact": {
+
+            "get": {
+                "summary": "Obtenir tous les contacts",
+                "description": "Récupérer une liste de tous les messages de contact.",
+                "responses": {
+                    "200": {
+                        "description": "Liste des contacts récupérée avec succès.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "code": {
+                                            "type": "integer",
+                                            "format": "int32"
+                                        },
+                                        "messages": {
+                                            "type": "string"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/BaseResponse"
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "code",
+                                        "messages",
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erreur serveur interne.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+
+            "post": {
+                "summary": "Créer un nouveau message de contact",
+                "description": "Créer un nouveau message de contact avec les informations fournies.",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "nom": {
+                                        "type": "string"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email"
+                                    },
+                                    "sujet": {
+                                        "type": "string"
+                                    },
+                                    "message": {
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "nom",
+                                    "email",
+                                    "sujet",
+                                    "message"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Message de contact créé avec succès.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Erreur dans la création du message de contact.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erreur serveur interne.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+
+        "/contact/{id}": {
+                "get": {
+                    "summary": "Obtenir un message de contact par ID",
+                    "description": "Récupérer les détails d'un message de contact spécifique.",
+                    "parameters": [
+                        {
+                            "name": "id",
+                            "in": "path",
+                            "required": true,
+                            "schema": {
+                                "type": "string"
+                            }
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "Message de contact récupéré avec succès.",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "$ref": "#/components/schemas/BaseResponse"
+                                    }
+                                }
+                            }
+                        },
+                        "404": {
+                            "description": "Message de contact non trouvé.",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "$ref": "#/components/schemas/BaseResponse"
+                                    }
+                                }
+                            }
+                        },
+                        "500": {
+                            "description": "Erreur serveur interne.",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "$ref": "#/components/schemas/BaseResponse"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "delete": {
+                    "summary": "Supprimer un message de contact",
+                    "description": "Supprimer un message de contact spécifique par ID.",
+                    "parameters": [
+                        {
+                            "name": "id",
+                            "in": "path",
+                            "required": true,
+                            "schema": {
+                                "type": "string"
+                            }
+                        }
+                    ],
+                    "responses": {
+                        "204": {
+                            "description": "Message de contact supprimé avec succès.",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "$ref": "#/components/schemas/BaseResponse"
+                                    }
+                                }
+                            }
+                        },
+                        "404": {
+                            "description": "Message de contact non trouvé.",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "$ref": "#/components/schemas/BaseResponse"
+                                    }
+                                }
+                            }
+                        },
+                        "500": {
+                            "description": "Erreur serveur interne.",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "$ref": "#/components/schemas/BaseResponse"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+        },
+
+        "/plansTarifaires": {
+            "get": {
+                "summary": "Obtenir tous les plans tarifaires",
+                "description": "Récupérer une liste de tous les plans tarifaires disponibles.",
+                "responses": {
+                    "200": {
+                        "description": "Liste des plans tarifaires récupérée avec succès.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "code": {
+                                            "type": "integer",
+                                            "format": "int32"
+                                        },
+                                        "messages": {
+                                            "type": "string"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/PlansTarifaires"
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "code",
+                                        "messages",
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erreur serveur interne.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "summary": "Créer un nouveau plan tarifaire",
+                "description": "Créer un nouveau plan tarifaire avec les informations fournies.",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "nom": {
+                                        "type": "string"
+                                    },
+                                    "description": {
+                                        "type": "string"
+                                    },
+                                    "prix": {
+                                        "type": "number",
+                                        "format": "float"
+                                    },
+                                    "products": {
+                                        "type": "integer"
+                                    },
+                                    "subscribers": {
+                                        "type": "integer"
+                                    },
+                                    "basicAnalytics": {
+                                        "type": "boolean"
+                                    },
+                                    "dateCreation": {
+                                        "type": "string",
+                                        "format": "date-time"
+                                    }
+                                },
+                                "required": [
+                                    "nom",
+                                    "description",
+                                    "prix",
+                                    "products",
+                                    "subscribers",
+                                    "basicAnalytics"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Plan tarifaire créé avec succès.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PlansTarifaires"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Erreur dans la création du plan tarifaire.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erreur serveur interne.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+
+        "/plansTarifaires/{id}": {
+            "get": {
+                "summary": "Obtenir un plan tarifaire par ID",
+                "description": "Récupérer les détails d'un plan tarifaire spécifique.",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Plan tarifaire récupéré avec succès.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PlansTarifaires"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Plan tarifaire non trouvé.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erreur serveur interne.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "summary": "Supprimer un plan tarifaire",
+                "description": "Supprimer un plan tarifaire spécifique par ID.",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Plan tarifaire supprimé avec succès.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Plan tarifaire non trouvé.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erreur serveur interne.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+
+        "/about": {
+
+            "get": {
+                "summary": "Obtenir tous les articles About",
+                "description": "Récupérer une liste de tous les articles About.",
+                "responses": {
+                    "200": {
+                        "description": "Liste des articles About récupérée avec succès.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "code": {
+                                            "type": "integer",
+                                            "format": "int32"
+                                        },
+                                        "messages": {
+                                            "type": "string"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/About"
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "code",
+                                        "messages",
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erreur serveur interne.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "summary": "Créer un nouvel article About",
+                "description": "Créer un nouvel article About avec les informations fournies.",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "libelle": {
+                                        "type": "string"
+                                    },
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "description": {
+                                        "type": "string"
+                                    },
+                                    "image": {
+                                        "type": "string",
+                                        "format": "uri"
+                                    },
+                                    "dateCreation": {
+                                        "type": "string",
+                                        "format": "date-time"
+                                    },
+                                    "dateModification": {
+                                        "type": "string",
+                                        "format": "date-time"
+                                    }
+                                },
+                                "required": [
+                                    "libelle",
+                                    "name",
+                                    "description",
+                                    "image",
+                                    "dateCreation",
+                                    "dateModification"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Article About créé avec succès.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/About"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Erreur dans la création de l'article About.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erreur serveur interne.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+
+        "/about/{id}": {
+            "get": {
+                "summary": "Obtenir un article About par ID",
+                "description": "Récupérer les détails d'un article About spécifique.",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Article About récupéré avec succès.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/About"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Article About non trouvé.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erreur serveur interne.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "summary": "Mettre à jour un article About",
+                "description": "Mettre à jour les informations d'un article About spécifique.",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "libelle": {
+                                        "type": "string"
+                                    },
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "description": {
+                                        "type": "string"
+                                    },
+                                    "image": {
+                                        "type": "string",
+                                        "format": "uri"
+                                    },
+                                    "dateCreation": {
+                                        "type": "string",
+                                        "format": "date-time"
+                                    },
+                                    "dateModification": {
+                                        "type": "string",
+                                        "format": "date-time"
+                                    }
+                                },
+                                "required": [
+                                    "libelle",
+                                    "name",
+                                    "description",
+                                    "image",
+                                    "dateCreation",
+                                    "dateModification"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Article About mis à jour avec succès.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/About"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Erreur dans la mise à jour de l'article About.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erreur serveur interne.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "summary": "Supprimer un article About",
+                "description": "Supprimer un article About spécifique par ID.",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Article About supprimé avec succès.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Article About non trouvé.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erreur serveur interne.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+
+        "/rechargements": {
+                "get": {
+                    "summary": "Obtenir tous les rechargements",
+                    "description": "Récupérer une liste de tous les rechargements.",
+                    "responses": {
+                        "200": {
+                            "description": "Liste des rechargements récupérée avec succès.",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "type": "object",
+                                        "properties": {
+                                            "code": {
+                                                "type": "integer",
+                                                "format": "int32"
+                                            },
+                                            "messages": {
+                                                "type": "string"
+                                            },
+                                            "data": {
+                                                "type": "array",
+                                                "items": {
+                                                    "$ref": "#/components/schemas/BaseResponse"
+                                                }
+                                            }
+                                        },
+                                        "required": [
+                                            "code",
+                                            "messages",
+                                            "data"
+                                        ]
+                                    }
+                                }
+                            }
+                        },
+                        "500": {
+                            "description": "Erreur serveur interne.",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "$ref": "#/components/schemas/BaseResponse"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "post": {
+                    "summary": "Créer un nouveau rechargement",
+                    "description": "Créer un nouveau rechargement avec les informations fournies.",
+                    "requestBody": {
+                        "required": true,
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "amount": {
+                                            "type": "number",
+                                            "format": "float"
+                                        },
+                                        "date": {
+                                            "type": "string",
+                                            "format": "date-time"
+                                        },
+                                        "user_id": {
+                                            "type": "string"
+                                        },
+                                        "currency_id": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "amount",
+                                        "date",
+                                        "user_id",
+                                        "currency_id"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "responses": {
+                        "201": {
+                            "description": "Rechargement créé avec succès.",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "$ref": "#/components/schemas/BaseResponse"
+                                    }
+                                }
+                            }
+                        },
+                        "400": {
+                            "description": "Erreur dans la création du rechargement.",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "$ref": "#/components/schemas/BaseResponse"
+                                    }
+                                }
+                            }
+                        },
+                        "500": {
+                            "description": "Erreur serveur interne.",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "$ref": "#/components/schemas/BaseResponse"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+
+        "/rechargements/{id}": {
+                "get": {
+                    "summary": "Obtenir un rechargement par ID",
+                    "description": "Récupérer les détails d'un rechargement spécifique.",
+                    "parameters": [
+                        {
+                            "name": "id",
+                            "in": "path",
+                            "required": true,
+                            "schema": {
+                                "type": "string"
+                            }
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "Rechargement récupéré avec succès.",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "$ref": "#/components/schemas/BaseResponse"
+                                    }
+                                }
+                            }
+                        },
+                        "404": {
+                            "description": "Rechargement non trouvé.",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "$ref": "#/components/schemas/BaseResponse"
+                                    }
+                                }
+                            }
+                        },
+                        "500": {
+                            "description": "Erreur serveur interne.",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "$ref": "#/components/schemas/BaseResponse"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+
+                "put": {
+                    "summary": "Mettre à jour un rechargement",
+                    "description": "Mettre à jour les informations d'un rechargement spécifique.",
+                    "parameters": [
+                        {
+                            "name": "id",
+                            "in": "path",
+                            "required": true,
+                            "schema": {
+                                "type": "string"
+                            }
+                        }
+                    ],
+                    "requestBody": {
+                        "required": true,
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "amount": {
+                                            "type": "number",
+                                            "format": "float"
+                                        },
+                                        "date": {
+                                            "type": "string",
+                                            "format": "date-time"
+                                        },
+                                        "user_id": {
+                                            "type": "string"
+                                        },
+                                        "currency_id": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "amount",
+                                        "date",
+                                        "user_id",
+                                        "currency_id"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "responses": {
+                        "200": {
+                            "description": "Rechargement mis à jour avec succès.",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "$ref": "#/components/schemas/BaseResponse"
+                                    }
+                                }
+                            }
+                        },
+                        "400": {
+                            "description": "Erreur dans la mise à jour du rechargement.",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "$ref": "#/components/schemas/BaseResponse"
+                                    }
+                                }
+                            }
+                        },
+                        "500": {
+                            "description": "Erreur serveur interne.",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "$ref": "#/components/schemas/BaseResponse"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+
+                "delete": {
+                    "summary": "Supprimer un rechargement",
+                    "description": "Supprimer un rechargement spécifique par ID.",
+                    "parameters": [
+                        {
+                            "name": "id",
+                            "in": "path",
+                            "required": true,
+                            "schema": {
+                                "type": "string"
+                            }
+                        }
+                    ],
+                    "responses": {
+                        "204": {
+                            "description": "Rechargement supprimé avec succès."
+                        },
+                        "404": {
+                            "description": "Rechargement non trouvé.",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "$ref": "#/components/schemas/BaseResponse"
+                                    }
+                                }
+                            }
+                        },
+                        "500": {
+                            "description": "Erreur serveur interne.",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "$ref": "#/components/schemas/BaseResponse"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+
+        "/payments": {
+            "post": {
+                "summary": "Lancer un paiement",
+                "description": "Lance un nouveau paiement via l'API Wave.",
+                "requestBody": {
+                "required": true,
+                "content": {
+                    "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                        "amount": {
+                            "type": "number",
+                            "description": "Le montant du paiement en XOF."
+                        },
+                        "currency": {
+                            "type": "string",
+                            "description": "La devise du paiement, ici 'XOF'.",
+                            "example": "XOF"
+                        },
+                        "error_url": {
+                            "type": "string",
+                            "format": "uri",
+                            "description": "L'URL de redirection en cas d'échec du paiement.",
+                            "example": "https://vavavoom.ci/error"
+                        },
+                        "success_url": {
+                            "type": "string",
+                            "format": "uri",
+                            "description": "L'URL de redirection en cas de succès du paiement.",
+                            "example": "https://vavavoom.ci/infos"
+                        }
+                        },
+                        "required": ["amount", "currency", "error_url", "success_url"]
+                    }
+                    }
+                }
+                },
+                "responses": {
+                "200": {
+                    "description": "Paiement lancé avec succès.",
+                    "content": {
+                    "application/json": {
+                        "schema": {
+                        "$ref": "#/components/schemas/LaunchPaymentResponse"
+                        }
+                    }
+                    }
+                },
+                "400": {
+                    "description": "Erreur dans les paramètres de la requête.",
+                    "content": {
+                    "application/json": {
+                        "schema": {
+                        "$ref": "#/components/schemas/BaseResponse"
+                        }
+                    }
+                    }
+                },
+                "500": {
+                    "description": "Erreur serveur interne.",
+                    "content": {
+                    "application/json": {
+                        "schema": {
+                        "$ref": "#/components/schemas/BaseResponse"
+                        }
+                    }
+                    }
+                }
+                }
+            }
+            },
+
+        "/payments/{waveId}": {
+            "get": {
+                "summary": "Obtenir le statut du paiement",
+                "description": "Retourne le statut du paiement pour l'identifiant donné.",
+                "parameters": [
+                    {
+                        "name": "waveId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "description": "Identifiant unique du paiement."
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Statut du paiement récupéré avec succès.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "code": {
+                                            "type": "integer",
+                                            "format": "int32"
+                                        },
+                                        "messages": {
+                                            "type": "string"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "payment_status": {
+                                                    "type": "string",
+                                                    "description": "Statut du paiement."
+                                                },
+                                                "last_payment_error": {
+                                                    "type": "string",
+                                                    "description": "Dernière erreur de paiement, si applicable."
+                                                }
+                                            },
+                                            "required": [
+                                                "payment_status"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "code",
+                                        "messages",
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Erreur dans la récupération du statut du paiement.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erreur serveur interne.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+    },
+
+
+    "components": {
+
+        "securitySchemes": {
+            "BearerAuth": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "JWT"
+            }
+        } ,
+
+        "schemas": {
+
+            "BaseResponse": {
+                "type": "object",
+                "properties": {
+                    "code": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "messages": {
+                        "type": "string"
+                    }
+                }
+            },
+
+            "BaseResponseUser": {
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/BaseResponse"
+                    },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "data": {
+                                "type": "object",
+                                "properties": {
+                                    "id": {
+                                        "type": "string"
+                                    },
+                                    "username": {
+                                        "type": "string"
+                                    },
+                                    "email": {
+                                        "type": "string"
+                                    },
+                                    "password_hash": {
+                                        "type": "string"
+                                    },
+                                    "role": {
+                                        "type": "string"
+                                    },
+                                    "photo_url": {
+                                        "type": "string"
+                                    },
+                                    "contact_number": {
+                                        "type": "string"
+                                    },
+                                    "address": {
+                                        "type": "string"
+                                    },
+                                    "bio": {
+                                        "type": "string"
+                                    },
+                                    "date_of_birth": {
+                                        "type": "string",
+                                        "format": "date-time"
+                                    },
+                                    "created_at": {
+                                        "type": "string",
+                                        "format": "date-time"
+                                    },
+                                    "updated_at": {
+                                        "type": "string",
+                                        "format": "date-time"
+                                    },
+                                    "last_login": {
+                                        "type": "string",
+                                        "format": "date-time"
+                                    },
+                                    "is_active": {
+                                        "type": "boolean"
+                                    },
+                                    "verification_status": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                ]
+            },
+
+            "BaseResponseArrayUser": {
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/BaseResponse"
+                    },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "data": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/components/schemas/BaseResponseUser"
+                                }
+                            }
+                        }
+                    }
+                ]
+            }
+
+        }
+    },
+
+    "security": [
+        {
+            "BearerAuth": []
+        }
+    ]
+}
