@@ -53,6 +53,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 // Définir le dossier 'uploads' comme dossier statique
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
+
 // Configurer les routes
 app.use('/api/users', userRoutes);
 app.use('/api/otp', otpRoutes);

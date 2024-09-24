@@ -32,9 +32,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.logout = exports.login = void 0;
+exports.resetPasswordController = exports.sendOtpController = exports.logout = exports.login = void 0;
 const authValidation_1 = require("../validation/authValidation");
 const authService = __importStar(require("../services/authService"));
+const sendOtpSchema_1 = require("../validation/sendOtpSchema");
+const zod_1 = require("zod");
+const Auth_1 = require("../services/Auth");
 const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         // Valider les données de la requête
@@ -80,4 +83,57 @@ const logout = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.logout = logout;
+// Contrôleur pour envoyer l'OTP
+const sendOtpController = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a, _b;
+    try {
+        const parsedBody = sendOtpSchema_1.sendOtpSchema.parse(req.body);
+        const response = yield (0, Auth_1.sendOtp)(parsedBody.email);
+        // Supposons que l'utilisateur soit également retourné
+        const user = ((_a = response.data) === null || _a === void 0 ? void 0 : _a.user) || null; // Assurez-vous que votre service retourne l'utilisateur
+        const responseData = {
+            code: response.code,
+            messages: response.messages,
+            data: { token: (_b = response.data) === null || _b === void 0 ? void 0 : _b.otpToken },
+        };
+        res.status(response.code).json(responseData);
+    }
+    catch (error) {
+        if (error instanceof zod_1.z.ZodError) {
+            const response = {
+                code: 400,
+                messages: error.errors.map(e => e.message).join(', '),
+            };
+            return res.status(400).json(response);
+        }
+        console.error(error);
+        res.status(500).json({ code: 500, messages: 'Internal server error' });
+    }
+});
+exports.sendOtpController = sendOtpController;
+const resetPasswordController = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    try {
+        const parsedBody = sendOtpSchema_1.resetPasswordSchema.parse(req.body);
+        const response = yield (0, Auth_1.resetPassword)(parsedBody.password, parsedBody.email); // Ajout de l'email si nécessaire
+        const responseData = {
+            code: response.code,
+            messages: response.messages,
+            data: { token: (_a = response.data) === null || _a === void 0 ? void 0 : _a.token },
+        };
+        res.status(response.code).json(responseData);
+    }
+    catch (error) {
+        if (error instanceof zod_1.z.ZodError) {
+            const response = {
+                code: 400,
+                messages: error.errors.map(e => e.message).join(', '),
+            };
+            return res.status(400).json(response);
+        }
+        console.error(error);
+        res.status(500).json({ code: 500, messages: 'Internal server error' });
+    }
+});
+exports.resetPasswordController = resetPasswordController;
 //# sourceMappingURL=authController.js.map

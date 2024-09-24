@@ -63,6 +63,7 @@ const paymentRoutes_1 = __importDefault(require("./routes/paymentRoutes"));
 const path_1 = __importDefault(require("path"));
 const seacheUsersRoutes_1 = __importDefault(require("./routes/seacheUsersRoutes"));
 const commandesSearchRoutes_1 = __importDefault(require("./routes/commandesSearchRoutes"));
+const otpRoutes_1 = __importDefault(require("./routes/otpRoutes"));
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 const port = process.env.PORT || 4000;
@@ -83,6 +84,7 @@ app.use('/api-docs', swagger_ui_express_1.default.serve, swagger_ui_express_1.de
 app.use('/uploads', express_1.default.static(path_1.default.join(__dirname, 'uploads')));
 // Configurer les routes
 app.use('/api/users', userRoutes_1.default);
+app.use('/api/otp', otpRoutes_1.default);
 app.use('/api/users-mdp', userRoutes_1.default);
 app.use('/api/users-search', seacheUsersRoutes_1.default);
 app.use('/api/settings', settingsRoutes_1.default);
