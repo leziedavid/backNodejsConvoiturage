@@ -6,6 +6,7 @@ import {
     handleGetVehicules,
     handleGetVehiculeById,
     handleDeleteVehicule,
+    handleGetVehiculesByUserId,
 } from '../controllers/vehiculeController';
 
 const router = Router();
@@ -25,4 +26,5 @@ router.put('/:id', handleUpdateVehicule);
 // Route pour supprimer un véhicule
 router.delete('/:id', handleDeleteVehicule);
 
+router.get('/:user/:userId', handleGetVehiculesByUserId);
 export default router;

@@ -6,9 +6,11 @@ import {
     getVehicules,
     getVehiculeById,
     deleteVehicule,
+    getVehiculesByUserId,
 } from '../services/vehiculeService';
 import { createVehiculeSchema, updateVehiculeSchema } from '../validation/vehiculeValidation';
 import { BaseResponse } from '../interfaces/BaseResponse';
+import { Vehicule } from '@prisma/client';
 
 export const handleCreateVehicule = async (req: Request, res: Response) => {
     try {
@@ -100,6 +102,26 @@ export const handleDeleteVehicule = async (req: Request, res: Response) => {
         res.status(500).json({
             code: 500,
             messages: 'Erreur interne du serveur'
+        });
+    }
+};
+
+
+export const handleGetVehiculesByUserId = async (req: Request, res: Response) => {
+    const userId = req.params.userId;
+
+    try {
+        const vehicules: Vehicule[] = await getVehiculesByUserId(userId);
+        const response: BaseResponse<typeof vehicules> = {
+            code: 200,
+            messages: 'Véhicules récupérés avec succès',
+            data: vehicules,
+        };
+        res.status(200).json(response);
+    } catch (error: any) {
+        res.status(500).json({
+            code: 500,
+            messages: 'Erreur interne du serveur',
         });
     }
 };

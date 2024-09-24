@@ -54,3 +54,19 @@ export const getVehiculeById = async (id: string): Promise<Vehicule | null> => {
 export const deleteVehicule = async (id: string): Promise<void> => {
     await prisma.vehicule.delete({ where: { id } });
 };
+
+
+export const getVehiculesByUserId = async (userId: string): Promise<Vehicule[]> => {
+
+    try {
+        const vehicules = await prisma.vehicule.findMany({
+            where: {
+                utilisateur_id: userId,
+            },
+        });
+        return vehicules;
+
+    } catch (error) {
+        throw new Error('Erreur lors de la récupération des véhicules : ' + error);
+    }
+};

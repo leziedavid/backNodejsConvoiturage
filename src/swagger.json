@@ -1,11 +1,16 @@
 {
-    "openapi": "3.0.0",
+    "openapi": "3.1.0",
     "info": {
         "title": "Covoiturage API",
         "description": "API pour la gestion du covoiturage.",
-        "version": "1.0.0"
+        "version": "2.0.0"
     },
+
     "servers": [
+        {
+            "url": "https://backend.covoitivoire.com/api/",
+            "description": "Serveur de production"
+        },
         {
             "url": "http://localhost:4000/api/",
             "description": "Serveur de développement"
@@ -555,9 +560,57 @@
             }
         },
 
+        "/dashboard/stats": {
+
+            "get": {
+                "summary": "Obtenir toute les données du dashboard",
+                "description": "Récupérer toute les données du dashboard.",
+                "responses": {
+                    "200": {
+                        "description": "Données du dashboard.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "code": {
+                                            "type": "integer",
+                                            "format": "int32"
+                                        },
+                                        "messages": {
+                                            "type": "string"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/BaseResponse"
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "code",
+                                        "messages",
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erreur serveur interne.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
     
         "/trajets": {
-
             "post": {
                 "summary": "Créer un trajet",
                 "description": "Créer un nouveau trajet avec les informations fournies.",
@@ -569,11 +622,12 @@
                                 "type": "object",
                                 "properties": {
                                     "id": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "example": "b8a3724d-68d8-4b9e-8b7e-f8d1d3c0ad09"
                                     },
                                     "utilisateur_id": {
                                         "type": "string",
-                                        "example": "0b28de33-87f2-49d5-b6dc-fb046f61f675"
+                                        "example": "f4eaa12f-8637-446d-85de-28e085340119"
                                     },
                                     "point_depart": {
                                         "type": "object",
@@ -581,12 +635,12 @@
                                             "lat": {
                                                 "type": "number",
                                                 "format": "float",
-                                                "example": 5.359952
+                                                "example": 5.3252258
                                             },
                                             "lon": {
                                                 "type": "number",
                                                 "format": "float",
-                                                "example": -4.008256
+                                                "example": -4.019603
                                             }
                                         },
                                         "required": [
@@ -596,7 +650,7 @@
                                     },
                                     "ville_depart": {
                                         "type": "string",
-                                        "example": "ABIDJAN"
+                                        "example": "Abidjan, Côte d'Ivoire"
                                     },
                                     "point_arrivee": {
                                         "type": "object",
@@ -604,12 +658,12 @@
                                             "lat": {
                                                 "type": "number",
                                                 "format": "float",
-                                                "example": 6.8184
+                                                "example": 7.690466
                                             },
                                             "lon": {
                                                 "type": "number",
                                                 "format": "float",
-                                                "example": -5.2754
+                                                "example": -5.0390536
                                             }
                                         },
                                         "required": [
@@ -619,26 +673,26 @@
                                     },
                                     "ville_arrivee": {
                                         "type": "string",
-                                        "example": "AGBOVILLE"
+                                        "example": "Bouaké, Côte d'Ivoire"
                                     },
                                     "temps_depart_prevu": {
                                         "type": "string",
                                         "format": "date-time",
-                                        "example": "2024-08-22T14:30:00Z"
+                                        "example": "2024-09-03T12:05:00Z"
                                     },
                                     "temps_arrivee_prevu": {
                                         "type": "string",
                                         "format": "date-time",
-                                        "example": "2024-08-22T16:30:00Z"
+                                        "example": "2024-09-05T12:05:00Z"
                                     },
                                     "duree_estimee": {
                                         "type": "integer",
-                                        "example": 120
+                                        "example": 180
                                     },
                                     "distance_estimee": {
                                         "type": "number",
                                         "format": "float",
-                                        "example": 20
+                                        "example": 286.10
                                     },
                                     "etat_trajet": {
                                         "type": "string",
@@ -646,22 +700,48 @@
                                     },
                                     "mode_transport": {
                                         "type": "string",
-                                        "example": "Voiture"
+                                        "example": "voiture"
                                     },
                                     "price": {
                                         "type": "number",
                                         "format": "float",
-                                        "example": 5000,
+                                        "example": 3000,
                                         "nullable": true
                                     },
                                     "nombre_de_places": {
                                         "type": "integer",
-                                        "example": 4
+                                        "example": 1
                                     },
-
                                     "vehicule_id": {
                                         "type": "string",
-                                        "example": "47dcd5ab-5153-48f8-b87d-8cd7932d423e"
+                                        "example": "76ef2be8-496e-4d06-a7c7-a3b4ae571fea"
+                                    },
+                                    "arrets": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "object",
+                                            "properties": {
+                                                "lat": {
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "example": 6.5560282
+                                                },
+                                                "lon": {
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "example": -5.0156456
+                                                },
+                                                "ville": {
+                                                    "type": "string",
+                                                    "example": "Toumodi, Côte d'Ivoire"
+                                                }
+                                            },
+                                            "required": [
+                                                "lat",
+                                                "lon",
+                                                "ville"
+                                            ]
+                                        }
                                     }
                                 },
                                 "required": [
@@ -677,7 +757,8 @@
                                     "etat_trajet",
                                     "mode_transport",
                                     "nombre_de_places",
-                                    "price"
+                                    "vehicule_id",
+                                    "arrets"
                                 ]
                             }
                         }
@@ -716,7 +797,6 @@
                     }
                 }
             },
-
             "get": {
                 "summary": "Obtenir tous les trajets",
                 "description": "Récupérer une liste de tous les trajets.",
@@ -764,7 +844,7 @@
                 }
             }
         },
-
+        
         "/trajets/{id}": {
 
             "put": {
@@ -848,7 +928,8 @@
                                         "example": "2024-08-15T16:30:00Z"
                                     },
                                     "duree_estimee": {
-                                        "type": "integer"
+                                        "type": "integer",
+                                        "example": 120
                                     },
                                     "distance_estimee": {
                                         "type": "number",
@@ -891,7 +972,7 @@
                                     "etat_trajet",
                                     "mode_transport",
                                     "nombre_de_places",
-                                    "price"
+                                    "vehicule_id"
                                 ]
                             }
                         }
@@ -940,7 +1021,7 @@
                     }
                 }
             },
-
+    
             "get": {
                 "summary": "Obtenir un trajet par ID",
                 "description": "Récupérer les détails d'un trajet spécifique.",
@@ -1036,6 +1117,104 @@
             }
         },
 
+        "/updated/{id}/updated": {
+            "put": {
+                "summary": "Mettre à jour un trajet",
+                "description": "Mettre à jour les informations d'un trajet existant.",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "temps_depart_prevu": {
+                                        "type": "string",
+                                        "format": "date-time",
+                                        "example": "2024-08-15T14:30:00Z"
+                                    },
+                                    "temps_arrivee_prevu": {
+                                        "type": "string",
+                                        "format": "date-time",
+                                        "example": "2024-08-15T16:30:00Z"
+                                    },
+                                    "nombre_de_places": {
+                                        "type": "integer",
+                                        "example": 4
+                                    },
+                                    "price": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 5000,
+                                        "nullable": true
+                                    },
+                                    "vehicule_id": {
+                                        "type": "string",
+                                        "example": "47dcd5ab-5153-48f8-b87d-8cd7932d423e"
+                                    }
+                                },
+                                "required": [
+                                    "vehicule_id"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Trajet mis à jour avec succès.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Erreur dans la mise à jour du trajet.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Trajet non trouvé.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erreur serveur interne.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+
         "/trajets/{id}/listes": {
             "get": {
                 "summary": "Obtenir un trajet par ID",
@@ -1085,7 +1264,7 @@
             }
         },
 
-        "/search/{trajets}": {
+        "/search-trajets": {
             "post": {
                 "summary": "Rechercher des trajets",
                 "description": "Rechercher des trajets en fonction des critères fournis comme point de départ, point d'arrivée, temps de départ prévu et nombre de places.",
@@ -1102,15 +1281,18 @@
                                             "lat": {
                                                 "type": "number",
                                                 "format": "float",
-                                                "example": 48.8566
+                                                "example": 5.3252258
                                             },
                                             "lon": {
                                                 "type": "number",
                                                 "format": "float",
-                                                "example": 2.3522
+                                                "example": -4.019603
                                             }
                                         },
-                                        "required": ["lat", "lon"]
+                                        "required": [
+                                            "lat",
+                                            "lon"
+                                        ]
                                     },
                                     "point_arrivee": {
                                         "type": "object",
@@ -1118,27 +1300,35 @@
                                             "lat": {
                                                 "type": "number",
                                                 "format": "float",
-                                                "example": 34.0522
+                                                "example": 6.8883341
                                             },
                                             "lon": {
                                                 "type": "number",
                                                 "format": "float",
-                                                "example": -118.2437
+                                                "example": -6.4396888
                                             }
                                         },
-                                        "required": ["lat", "lon"]
+                                        "required": [
+                                            "lat",
+                                            "lon"
+                                        ]
                                     },
                                     "temps_depart_prevu": {
                                         "type": "string",
                                         "format": "date-time",
-                                        "example": "2024-08-15T14:30:00Z"
+                                        "example": "2024-09-03T19:56:00.000Z"
                                     },
                                     "nombre_de_places": {
                                         "type": "integer",
-                                        "example": 3
+                                        "example": 1
                                     }
                                 },
-                                "required": ["point_depart", "point_arrivee", "temps_depart_prevu", "nombre_de_places"]
+                                "required": [
+                                    "point_depart",
+                                    "point_arrivee",
+                                    "temps_depart_prevu",
+                                    "nombre_de_places"
+                                ]
                             }
                         }
                     }
@@ -1163,22 +1353,22 @@
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/components/schemas/BaseRespons"
+                                                "$ref": "#/components/schemas/BaseResponse"
                                             },
                                             "example": [
                                                 {
                                                     "id": "1",
                                                     "utilisateur_id": "user123",
                                                     "point_depart": {
-                                                        "lat": 48.8566,
-                                                        "lon": 2.3522
+                                                        "lat": 5.3252258,
+                                                        "lon": -4.019603
                                                     },
                                                     "point_arrivee": {
-                                                        "lat": 34.0522,
-                                                        "lon": -118.2437
+                                                        "lat": 6.8883341,
+                                                        "lon": -6.4396888
                                                     },
-                                                    "temps_depart_prevu": "2024-08-15T14:30:00Z",
-                                                    "temps_arrivee_prevu": "2024-08-15T17:00:00Z",
+                                                    "temps_depart_prevu": "2024-09-03T19:56:00.000Z",
+                                                    "temps_arrivee_prevu": "2024-09-03T22:00:00.000Z",
                                                     "duree_estimee": 150,
                                                     "distance_estimee": 5600.5,
                                                     "etat_trajet": "planned",
@@ -1187,7 +1377,7 @@
                                                     },
                                                     "mode_transport": "car",
                                                     "price": 75.0,
-                                                    "nombre_de_places": 3,
+                                                    "nombre_de_places": 1,
                                                     "arrets": [
                                                         {
                                                             "nom": "Stop 1"
@@ -1198,7 +1388,11 @@
                                             ]
                                         }
                                     },
-                                    "required": ["code", "messages", "data"]
+                                    "required": [
+                                        "code",
+                                        "messages",
+                                        "data"
+                                    ]
                                 }
                             }
                         }
@@ -1225,7 +1419,8 @@
                     }
                 }
             }
-        },
+        }
+        ,
 
         "/commandes": {
 
@@ -1844,18 +2039,12 @@
                             "schema": {
                                 "type": "object",
                                 "properties": {
-
-                                    "commandeId": {
-                                        "type": "string",
-                                        "example": "0b28de33-87f2-49d5-b6dc-fb046f61f675"
-                                    },
                                     "newStatus": {
                                         "type": "string",
                                         "example": "validated"
                                     }
                                 },
                                 "required": [
-                                    "commandeId",
                                     "newStatus"
                                 ]
                             }
@@ -2681,6 +2870,7 @@
         },
 
         "/vehicule/{id}": {
+
             "get": {
                 "summary": "Obtenir un véhicule par ID",
                 "description": "Récupérer les détails d'un véhicule spécifique.",
@@ -2843,6 +3033,56 @@
                 "responses": {
                     "204": {
                         "description": "Véhicule supprimé avec succès.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Véhicule non trouvé.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erreur serveur interne.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BaseResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+
+        "/vehicule/{users}/{id}": {
+            
+            "get": {
+                "summary": "Obtenir un véhicule par user ID",
+                "description": "Récupérer les détails d'un véhicule spécifique d'un utilisateur.",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Véhicule récupéré avec succès.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -4231,7 +4471,7 @@
                     "content": {
                     "application/json": {
                         "schema": {
-                        "$ref": "#/components/schemas/LaunchPaymentResponse"
+                        "$ref": "#//components/schemas/BaseResponse"
                         }
                     }
                     }

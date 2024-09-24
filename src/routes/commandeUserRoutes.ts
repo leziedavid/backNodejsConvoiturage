@@ -8,6 +8,6 @@ router.get('/:id', commandeController.getCommandeById);
 router.get('/:id/:one', commandeController.getCommandeByUsersId);
 router.get('/:id/:users/:all', commandeController.getAllCommandeByUserId);
 // Route pour mettre à jour le statut d'une commande
-router.put('/', commandeController.updateCommandeStatus);
+router.put('/:id', commandeController.updateCommandeStatus);
 
 export default router;

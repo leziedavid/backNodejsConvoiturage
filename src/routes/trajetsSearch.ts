@@ -1,8 +1,7 @@
 import { Router } from 'express';
 import {searchTrajets} from '../services/trajetService';
-// import {searchCommande} from '../services/commandeService';
+import * as trajetController from '../controllers/trajetController';
 
 const router = Router();
-router.post('/:trajets', searchTrajets);
-// router.get('/:commandes', searchCommande);
+router.post('/', trajetController.searchTrajets);
 export default router;

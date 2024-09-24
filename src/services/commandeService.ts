@@ -1,5 +1,6 @@
+import { Commande } from '@prisma/client';
 import prisma from '../Conn';
-import { Commande, Prisma } from '@prisma/client';
+import { paginate, PaginationOptions } from './allPaginations/odersPaginate';
 import { sendEmail } from './mailService';
 
 
@@ -177,10 +178,26 @@ export const updateCommande = async (commandeId: string, commandeData: any): Pro
     }
 };
 
+
 // Fonction pour obtenir toutes les commandes
-export const getCommandes = async (): Promise<Commande[]> => {
-    return prisma.commande.findMany();
+export const getCommandes = async (
+    options: PaginationOptions
+): Promise<{ data: Commande[]; total: number }> => {
+    return paginate(
+        (args) => prisma.commande.findMany({
+            orderBy: { date_creation: 'desc' },
+            include: {
+                trajet: true,
+                utilisateur: true,
+                conducteur: true,
+                reponsesConducteur: true,
+            },
+            ...args,
+        }),
+        options
+    );
 };
+
 
 // Fonction pour obtenir une commande par ID
 export const getCommandeById = async (id: string): Promise<Commande | null> => {
@@ -195,13 +212,13 @@ export const getCommandeById = async (id: string): Promise<Commande | null> => {
     });
 };
 
+// Fonction pour obtenir les commandes par ID
 
-// Fonction pour obtenir une commande par ID
-export const getCommandeByUsers = async (utilisateur_id: string): Promise<Commande | null> => {
+export const  getCommandeByUsers = async (utilisateur_id: string): Promise<Commande | null> => {
     return prisma.commande.findFirst({
         where: { utilisateur_id: utilisateur_id },
         orderBy: {
-            date_creation: 'desc',
+            date_creation: 'desc', // Trie par date de création, du plus récent au plus ancien
         },
         include: {
             trajet: true,
@@ -212,47 +229,46 @@ export const getCommandeByUsers = async (utilisateur_id: string): Promise<Comman
     });
 };
 
-// la dernier commande du user page d''accuel
-
-export const getAllCommandeByUsers = async (conducteurId: string): Promise<Commande[]> => {
-
-    const commandes = await prisma.commande.findMany({
-
-        where: { utilisateur_id: conducteurId },
-        orderBy: {
-            date_creation: 'desc',
-        },
-        include: {
-            trajet: true,
-            utilisateur: true,
-            conducteur: true,
-            reponsesConducteur: true,
-        },
-    });
-    return commandes;
+export const getAllCommandeByUsers = async (
+    utilisateur_id: string,
+    options: PaginationOptions
+): Promise<{ data: Commande[]; total: number }> => {
+    return paginate(
+        (args) => prisma.commande.findMany({
+            where: { utilisateur_id: utilisateur_id },
+            orderBy: { date_creation: 'desc' },
+            include: {
+                trajet: true,
+                utilisateur: true,
+                conducteur: true,
+                reponsesConducteur: true,
+            },
+            ...args,
+        }),
+        options
+    );
 };
 
-// la dernier commande du user page d''accuel
-
-export const getCommandesByConducteurId = async (conducteurId: string): Promise<Commande[]> => {
-    console.log(`Fetching commandes for conducteurId: ${conducteurId}`);
-    
-    const commandes = await prisma.commande.findMany({
-        where: { conducteur_id: conducteurId },
-        orderBy: {
-            date_creation: 'desc',
-        },
-        include: {
-            trajet: true,
-            utilisateur: true,
-            conducteur: true,
-            reponsesConducteur: true,
-        },
-    });
-
-    console.log(`Commandes fetched: ${commandes.length}`);
-    return commandes;
+export const getCommandesByConducteurId = async (
+    conducteur_id: string,
+    options: PaginationOptions
+): Promise<{ data: Commande[]; total: number }> => {
+    return paginate(
+        (args) => prisma.commande.findMany({
+            where: { conducteur_id: conducteur_id },
+            orderBy: { date_creation: 'desc' },
+            include: {
+                trajet: true,
+                utilisateur: true,
+                conducteur: true,
+                reponsesConducteur: true,
+            },
+            ...args,
+        }),
+        options
+    );
 };
+
 
 export const  getDerniereCommandeByConducteurId = async (conducteurId: string): Promise<Commande | null> => {
     return prisma.commande.findFirst({
@@ -269,14 +285,134 @@ export const  getDerniereCommandeByConducteurId = async (conducteurId: string): 
     });
 };
 
-
 // Fonction pour supprimer une commande
 export const deleteCommande = async (id: string): Promise<void> => {
     await prisma.commande.delete({ where: { id } });
 };
 
 // Fonction pour mettre à jour le statut de la commande
+
 export const updateCommandeStatus = async (commandeId: string, newStatus: string): Promise<Commande> => {
+    try {
+        // Vérifiez que la commande existe avant de tenter la mise à jour
+        const existingCommande = await prisma.commande.findUnique({
+            where: { id: commandeId },
+            include: {
+                trajet: true,          // Inclure le trajet dans la réponse
+                utilisateur: true,
+                conducteur: true,
+            },
+        });
+
+        if (!existingCommande) {
+            throw new Error('Commande not found');
+        }
+
+        // Montant de la commande
+        const montantCommande = existingCommande.montant || 0;
+
+        // Mettre à jour le statut de la commande
+        const updatedCommande = await prisma.commande.update({
+            where: { id: commandeId },
+            data: {
+                statut_commande: newStatus,
+                date_action: new Date(),
+            },
+            include: {
+                trajet: true,          // Inclure le trajet dans la réponse mise à jour
+                utilisateur: true,
+                conducteur: true,
+            },
+        });
+
+        // Récupérer les informations nécessaires
+        const { utilisateur, conducteur } = updatedCommande;
+
+        // Effectuer les mises à jour liées aux soldes
+        if (newStatus === 'validated') {
+            // Calculer 18% du montant de la commande
+            const montantDeduit = montantCommande * 0.18;
+
+            // Déduire le montant du wallet du conducteur
+            await prisma.wallet.update({
+                where: { user_id: conducteur.id },
+                data: { balance: { decrement: montantDeduit } },
+            });
+
+            // Ajouter la somme déduite dans la table Solde
+            await prisma.solde.create({
+                data: {
+                    user_id: conducteur.id,
+                    montant: montantDeduit,
+                    commandeId: updatedCommande.id,
+                },
+            });
+        } else if (newStatus === 'dismissed') {
+            // Récupérer le montant de la table Solde correspondant à la commande
+            const soldeEntry = await prisma.solde.findFirst({
+                where: { commandeId: updatedCommande.id },
+            });
+
+            if (soldeEntry) {
+                const montantRetourne = soldeEntry.montant;
+
+                // Rendre le montant au wallet du conducteur
+                await prisma.wallet.update({
+                    where: { user_id: conducteur.id },
+                    data: { balance: { increment: montantRetourne } },
+                });
+
+                // Supprimer l'entrée correspondante dans la table Solde
+                await prisma.solde.delete({
+                    where: { id: soldeEntry.id },
+                });
+            }
+        }
+
+        // Préparer le contenu de l'e-mail en fonction du statut
+        let subject = '';
+        let text = '';
+        let html = '';
+
+        switch (newStatus) {
+            case 'validated':
+                subject = 'Commande Validée';
+                text = `Votre commande ${updatedCommande.numeroCommande} a été validée.`;
+                html = `<p>Votre commande <strong>${updatedCommande.numeroCommande}</strong> a été validée.</p>`;
+                break;
+            case 'started':
+                subject = 'Commande Démarrée';
+                text = `Votre commande ${updatedCommande.numeroCommande} a été démarrée.`;
+                html = `<p>Votre commande <strong>${updatedCommande.numeroCommande}</strong> a été démarrée.</p>`;
+                break;
+            case 'dismissed':
+                subject = 'Commande Annulée';
+                text = `Votre commande ${updatedCommande.numeroCommande} a été annulée.`;
+                html = `<p>Votre commande <strong>${updatedCommande.numeroCommande}</strong> a été annulée.</p>`;
+                break;
+            default:
+                throw new Error('Invalid status');
+        }
+
+        // Envoyer un e-mail à l'utilisateur
+        await sendEmail({
+            to: utilisateur.email,
+            subject,
+            text,
+            html, // Inclure le contenu HTML dans l'e-mail
+        });
+
+        return updatedCommande;
+    } catch (err: unknown) {
+        if (err instanceof Error) {
+            console.error('Error updating commande status:', err);
+            throw new Error('Internal server error');
+        }
+        throw new Error('Internal server error');
+    }
+};
+
+export const updateCommandeStatus2 = async (commandeId: string, newStatus: string): Promise<Commande> => {
     try {
         // Vérifiez que la commande existe avant de tenter la mise à jour
         const existingCommande = await prisma.commande.findUnique({
@@ -317,17 +453,17 @@ export const updateCommandeStatus = async (commandeId: string, newStatus: string
         switch (newStatus) {
             case 'validated':
                 subject = 'Commande Validée';
-                text = `Votre commande ${updatedCommande.numeroCommande} a été validée. Trajet : ${trajet.point_depart} à ${trajet.point_arrivee}.`;
+                text = `Votre commande ${updatedCommande.numeroCommande} a été validée. Trajet : ${updatedCommande.trajet.ville_depart} à ${updatedCommande.trajet.ville_arrivee}.`;
                 html = `<p>Votre commande <strong>${updatedCommande.numeroCommande}</strong> a été validée.</p><p>Trajet : ${trajet.point_depart} à ${trajet.point_arrivee}.</p>`;
                 break;
             case 'started':
                 subject = 'Commande Démarrée';
-                text = `Votre commande ${updatedCommande.numeroCommande} a été démarrée. Trajet : ${trajet.point_depart} à ${trajet.point_arrivee}.`;
+                text = `Votre commande ${updatedCommande.numeroCommande} a été démarrée. Trajet : ${updatedCommande.trajet.ville_depart} à ${updatedCommande.trajet.ville_arrivee}.`;
                 html = `<p>Votre commande <strong>${updatedCommande.numeroCommande}</strong> a été démarrée.</p><p>Trajet : ${trajet.point_depart} à ${trajet.point_arrivee}.</p>`;
                 break;
             case 'dismissed':
                 subject = 'Commande Annulée';
-                text = `Votre commande ${updatedCommande.numeroCommande} a été annulée. Trajet : ${trajet.point_depart} à ${trajet.point_arrivee}.`;
+                text = `Votre commande ${updatedCommande.numeroCommande} a été annulée. Trajet : ${updatedCommande.trajet.ville_depart} à ${updatedCommande.trajet.ville_arrivee}.`;
                 html = `<p>Votre commande <strong>${updatedCommande.numeroCommande}</strong> a été annulée.</p><p>Trajet : ${trajet.point_depart} à ${trajet.point_arrivee}.</p>`;
                 break;
             default:
@@ -352,3 +488,98 @@ export const updateCommandeStatus = async (commandeId: string, newStatus: string
     }
 };
 
+
+export const searchCommandes = async (
+    options: PaginationOptions,
+    numeroCommande?: string,
+    dateCreation?: Date,
+    username?: string
+): Promise<{ data: Commande[]; total: number }> => {
+    // Préparer les critères de filtrage
+    const where: any = {};
+
+    if (numeroCommande) {
+        where.numeroCommande = numeroCommande;
+    }
+
+    if (dateCreation) {
+        where.date_creation = dateCreation;
+    }
+
+    if (username) {
+        where.utilisateur = {
+            username: username
+        };
+    }
+
+    // Utiliser la fonction paginate pour gérer la pagination
+    return paginate(
+        (args) => prisma.commande.findMany({
+            where: where,
+            orderBy: { date_creation: 'desc' },
+            include: {
+                trajet: true,
+                utilisateur: true,
+                conducteur: true,
+                reponsesConducteur: true,
+            },
+            ...args,
+        }),
+        options
+    );
+};
+
+// export const getCommandeByUsers = async (utilisateur_id: string): Promise<Commande | null> => {
+//     return prisma.commande.findFirst({
+//         where: { utilisateur_id: utilisateur_id },
+//         orderBy: {
+//             date_creation: 'desc',
+//         },
+//         include: {
+//             trajet: true,
+//             utilisateur: true,
+//             conducteur: true,
+//             reponsesConducteur: true,
+//         },
+//     });
+// };
+
+
+// export const getAllCommandeByUsers = async (conducteurId: string): Promise<Commande[]> => {
+
+//     const commandes = await prisma.commande.findMany({
+
+//         where: { utilisateur_id: conducteurId },
+//         orderBy: {
+//             date_creation: 'desc',
+//         },
+//         include: {
+//             trajet: true,
+//             utilisateur: true,
+//             conducteur: true,
+//             reponsesConducteur: true,
+//         },
+//     });
+//     return commandes;
+// };
+
+
+// export const getCommandesByConducteurId = async (conducteurId: string): Promise<Commande[]> => {
+//     console.log(`Fetching commandes for conducteurId: ${conducteurId}`);
+    
+//     const commandes = await prisma.commande.findMany({
+//         where: { conducteur_id: conducteurId },
+//         orderBy: {
+//             date_creation: 'desc',
+//         },
+//         include: {
+//             trajet: true,
+//             utilisateur: true,
+//             conducteur: true,
+//             reponsesConducteur: true,
+//         },
+//     });
+
+//     console.log(`Commandes fetched: ${commandes.length}`);
+//     return commandes;
+// };

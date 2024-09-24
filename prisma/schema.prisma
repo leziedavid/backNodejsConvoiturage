@@ -42,13 +42,13 @@ model User {
   // Relation avec le modèle Vehicule
   vehicules Vehicule[] @relation("UserVehicules")
 
-  wallet              Wallet? @relation("UserWallet") // Suppression des attributs fields et references ici
-  wallet_id           String?
+  wallet    Wallet? @relation("UserWallet") // Suppression des attributs fields et references ici
+  wallet_id String?
 
-rechargements       Rechargement[] @relation("UserRechargements") // Ajout de la relation inverse ici
+  rechargements Rechargement[] @relation("UserRechargements") // Ajout de la relation inverse ici
 
+  soldes Solde[] @relation("UserSoldes") // Relation ajoutée
 }
-
 
 model Trajet {
   id                  String     @id @default(uuid())
@@ -61,22 +61,21 @@ model Trajet {
   temps_arrivee_prevu DateTime
   duree_estimee       Int
   distance_estimee    Float
+  tempsDistance       String?    // Nouveau champ ajouté, optionnel
   etat_trajet         String
   historique_position Json?
   mode_transport      String
   nombre_de_places    Int
   price               Float?
-  arrets              Arret[]   // Liste non optionnelle, mais peut être vide
+  arrets              Arret[] // Liste non optionnelle, mais peut être vide
   commandes           Commande[] @relation("TrajetCommandes")
   utilisateur         User       @relation("UserTrajets", fields: [utilisateur_id], references: [id])
   vehicule            Vehicule   @relation("TrajetVehicule", fields: [vehicule_id], references: [id])
   vehicule_id         String
 
-  created_at          DateTime   @default(now())  // Assurez-vous que ce champ est présent
-  updated_at          DateTime   @updatedAt
+  created_at DateTime @default(now()) // Assurez-vous que ce champ est présent
+  updated_at DateTime @updatedAt
 }
-
-
 
 model Commande {
   id                        String    @id @default(uuid())
@@ -98,11 +97,11 @@ model Commande {
   evaluations               Json?
   date_action               DateTime? // Nouveau champ pour la date d'action
 
-  trajet      Trajet @relation("TrajetCommandes", fields: [trajet_id], references: [id])
-  utilisateur User   @relation("UserCommandes", fields: [utilisateur_id], references: [id])
-  conducteur  User   @relation("ConducteurCommandes", fields: [conducteur_id], references: [id])
-
+  trajet             Trajet              @relation("TrajetCommandes", fields: [trajet_id], references: [id])
+  utilisateur        User                @relation("UserCommandes", fields: [utilisateur_id], references: [id])
+  conducteur         User                @relation("ConducteurCommandes", fields: [conducteur_id], references: [id])
   reponsesConducteur ReponseConducteur[] @relation("CommandeReponse")
+  soldes             Solde[]             @relation("CommandeSoldes") // Relation ajoutée
 }
 
 model Arret {
@@ -127,7 +126,6 @@ model ReponseConducteur {
   conducteur User     @relation("ConducteurReponses", fields: [conducteur_id], references: [id])
 }
 
-
 model Vehicule {
   id                String   @id @default(uuid())
   utilisateur_id    String
@@ -140,11 +138,9 @@ model Vehicule {
   carte_grise       String?
   date_creation     DateTime @default(now())
   date_modification DateTime @updatedAt
-  utilisateur      User     @relation("UserVehicules", fields: [utilisateur_id], references: [id])
-  trajets          Trajet[] @relation("TrajetVehicule") // Relation inverse avec Trajet
+  utilisateur       User     @relation("UserVehicules", fields: [utilisateur_id], references: [id])
+  trajets           Trajet[] @relation("TrajetVehicule") // Relation inverse avec Trajet
 }
-
-
 
 // schema.prisma
 model Contact {
@@ -185,27 +181,38 @@ model About {
 }
 
 model Wallet {
-  id                String      @id @default(uuid())
-  user_id           String      @unique
-  balance           Decimal     @default(0.0) @db.Decimal(10, 2)
-  currency_id       String      @default("FCFA") // Assurez-vous que ce champ est traité comme un champ normal
-  created_at        DateTime    @default(now())
-  updated_at        DateTime    @updatedAt
-  user              User        @relation("UserWallet", fields: [user_id], references: [id])
-  rechargements     Rechargement[]
+  id            String         @id @default(uuid())
+  user_id       String         @unique
+  balance       Decimal        @default(0.0) @db.Decimal(10, 2)
+  currency_id   String         @default("FCFA") // Assurez-vous que ce champ est traité comme un champ normal
+  created_at    DateTime       @default(now())
+  updated_at    DateTime       @updatedAt
+  user          User           @relation("UserWallet", fields: [user_id], references: [id])
+  rechargements Rechargement[]
+}
+
+model Rechargement {
+  id             String   @id @default(uuid())
+  date           DateTime @default(now())
+  description    String
+  amount         Decimal  @db.Decimal(10, 2) // Exemple: précision 10, échelle 2
+  paymentMethod  String
+  status         String
+  wallet_id      String
+  utilisateur_id String
+  wallet         Wallet   @relation(fields: [wallet_id], references: [id])
+  utilisateur    User     @relation("UserRechargements", fields: [utilisateur_id], references: [id])
 }
 
 
+model Solde {
+  id          String     @id @default(uuid())
+  user_id     String
+  montant     Decimal    @db.Decimal(10, 2)
+  created_at  DateTime   @default(now())
+  updated_at  DateTime   @updatedAt
+  commandeId  String
 
-model Rechargement {
-  id                String     @id @default(uuid())
-  date              DateTime   @default(now())
-  description       String
-  amount            Decimal    @db.Decimal(10, 2) // Exemple: précision 10, échelle 2
-  paymentMethod     String
-  status            String
-  wallet_id         String
-  utilisateur_id    String
-  wallet            Wallet     @relation(fields: [wallet_id], references: [id])
-  utilisateur       User       @relation("UserRechargements", fields: [utilisateur_id], references: [id])
+  user        User       @relation("UserSoldes", fields: [user_id], references: [id])
+  commande    Commande   @relation("CommandeSoldes", fields: [commandeId], references: [id])
 }

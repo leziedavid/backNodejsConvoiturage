@@ -1,8 +1,9 @@
 // src/services/userService.ts
-import { Request, Response } from 'express';
+
+import { Prisma, User } from '@prisma/client';
 import prisma from '../Conn';
+import { paginate, PaginationOptions } from './allPaginations/usersPaginate';
 const bcrypt = require('bcryptjs');
-import { User, Prisma, Wallet } from '@prisma/client';
 
 interface UserStatistics {
     totalCourses: number;
@@ -11,7 +12,6 @@ interface UserStatistics {
     lastTrajet: any; // Remplacez `any` par le type approprié si disponible
     userDetail: any;
 }
-
 
 // Fonction pour créer un utilisateur
 export const createUser = async (userData: any, file: Express.Multer.File | undefined, baseUrl: string): Promise<User> => {
@@ -102,9 +102,53 @@ export const updateUser = async (userId: string, userData: any, file: Express.Mu
     });
 };
 
-export const getUsers = async (): Promise<User[]> => {
-    return prisma.user.findMany();
+export const updateUsermdp = async (userId: string,{ currentPassword, newPassword }: { currentPassword: string; newPassword: string }
+): Promise<User> => {
+    // Trouver l'utilisateur existant
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    if (!user) throw new Error('User not found');
+
+    // Vérifier que le mot de passe actuel est correct
+    console.log(user.password_hash);
+    const isPasswordValid = await bcrypt.compare(currentPassword, user.password_hash);
+    if (!isPasswordValid) throw new Error('Current password is incorrect');
+
+    // Préparer les données pour la mise à jour
+    const updateData: Prisma.UserUpdateInput = {};
+
+    if (newPassword) {
+        // Générer un hash pour le nouveau mot de passe
+        const salt = await bcrypt.genSalt(10);
+        updateData.password_hash = await bcrypt.hash(newPassword, salt);
+    }
+
+    // Mettre à jour l'utilisateur avec les nouvelles données
+    return prisma.user.update({
+        where: { id: userId },
+        data: updateData,
+    });
 };
+
+export const getUsers = async (
+    options: PaginationOptions
+): Promise<{ data: User[]; total: number }> => {
+    return paginate(
+        (args) => prisma.user.findMany({
+            orderBy: { created_at: 'desc' },
+            include: {
+                trajets: true,
+                commandes: true,
+                reponsesConducteur: true,
+                commandesConducteur: true,
+                vehicules: true,
+                rechargements: true
+            },
+            ...args,
+        }),
+        options
+    );
+};
+
 
 export const getUserById = async (id: string): Promise<User | null> => {
     return prisma.user.findUnique({
@@ -114,7 +158,8 @@ export const getUserById = async (id: string): Promise<User | null> => {
             commandes: true,
             reponsesConducteur: true,
             commandesConducteur: true,
-            vehicules: true
+            vehicules: true,
+            rechargements: true
         }
     });
 };
@@ -129,10 +174,9 @@ export const getUserInfo = async (id: string): Promise<User | null> => {
 export const deleteUser = async (id: string): Promise<void> => {
     await prisma.user.delete({ where: { id } });
 };
-
-
 export const getUserStatistics = async (userId: string): Promise<UserStatistics> => {
     try {
+
         // Total des courses de l'utilisateur
         const totalCourses = await prisma.commande.count({
             where: { utilisateur_id: userId },
@@ -166,14 +210,27 @@ export const getUserStatistics = async (userId: string): Promise<UserStatistics>
             orderBy: {
                 created_at: 'desc',
             },
+            include: {
+                wallet: true,
+            }
+        });
+
+        // Dernier rechargement de l'utilisateur
+        const rechargements = await prisma.rechargement.findFirst({
+            where: { utilisateur_id: userId },
+            orderBy: { date: 'desc' }
         });
 
         return {
+
             totalCourses,
             numberOfVehicles,
             totalAmount,
             lastTrajet,
-            userDetail,
+            userDetail: {
+                ...userDetail,
+                rechargements,
+            },
         };
     } catch (error) {
         console.error('Error fetching user statistics:', error);
@@ -181,5 +238,51 @@ export const getUserStatistics = async (userId: string): Promise<UserStatistics>
     }
 };
 
+export const updateUserState = async (
+    userId: string,
+    userData: { isActive: boolean | null; verificationStatus: 'validated' | 'pending' | null }
+): Promise<User> => {
+    // Trouver l'utilisateur existant
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    if (!user) throw new Error('User not found');
 
+    // Préparer les données de mise à jour
+    const updateData: Prisma.UserUpdateInput = {};
+
+    if (userData.isActive !== null) {
+        updateData.is_active = userData.isActive;
+    }
+
+    if (userData.verificationStatus !== null) {
+        updateData.verification_status = userData.verificationStatus;
+    }
+
+    // Mettre à jour l'utilisateur dans la base de données
+    return prisma.user.update({
+        where: { id: userId },
+        data: updateData,
+    });
+};
+
+export const searchUsers = async (
+    searchTerm: string,
+    options: PaginationOptions
+): Promise<{ data: User[]; total: number }> => {
+    return paginate(
+        (args) => prisma.user.findMany({
+            where: {
+                username: {
+                    contains: searchTerm,
+                    mode: 'insensitive', // Recherche insensible à la casse
+                },
+            },
+            orderBy: { created_at: 'desc' },
+            include: {
+                vehicules: true, // Incluez les relations nécessaires
+            },
+            ...args,
+        }),
+        options
+    );
+};
 

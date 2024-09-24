@@ -12,6 +12,10 @@ export const createUserSchema = z.object({
     bio: z.string().optional(),
     date_of_birth: z.date().optional(),
 });
+export const updateMdp = z.object({
+    currentPassword: z.string().min(8, 'Password must be at least 8 characters long'),
+    newPassword: z.string().min(8, 'Password must be at least 8 characters long'),
+});
 
 export const updateUserSchema = createUserSchema
     .omit({ password: true })  // On ne met pas à jour le mot de passe ici
