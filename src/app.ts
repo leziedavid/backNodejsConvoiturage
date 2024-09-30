@@ -70,6 +70,7 @@ app.use('/api/reponseConducteur', reponseDuConducteurRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/arrets', arretRoutes);
 app.use('/api/search-trajets', trajetsSearch);
+app.use('/api/updateStatusTrajet', trajetsSearch);
 app.use('/api/vehicule', vehiculeRouter);
 app.use('/api/contact', contactRouter);
 app.use('/api/faqs', faqRouter);

@@ -6,6 +6,7 @@ import { z } from 'zod';
 import { createTrajetSchema, updateTrajetSchema, getTrajetByIdSchema, searchTrajetSchema, updateTrajetDetailsSchema } from '../validation/trajetValidation';
 import jwt from 'jsonwebtoken';
 import { Trajet } from '@prisma/client';
+import { updateTrajetStatus } from '../services/trajetService';
 
 
 interface DecodedToken {
@@ -237,25 +238,6 @@ export const getTrajets = async (req: Request, res: Response) => {
     }
 };
 
-// export const getTrajets1 = async (req: Request, res: Response) => {
-
-//     try {
-//         const trajets = await trajetService.getTrajets();
-//         const response: BaseResponse<typeof trajets> = {
-//             code: 200,
-//             messages: 'Trajets retrieved successfully',
-//             data: trajets,
-//         };
-//         res.json(response);
-//     } catch (error) {
-//         const response: BaseResponse<null> = {
-//             code: 500,
-//             messages: 'Internal server error',
-//         };
-//         res.status(500).json(response);
-//     }
-// };
-
 export const getTrajetById = async (req: Request, res: Response) => {
     const { id } = req.params;
 
@@ -398,8 +380,6 @@ export const deleteTrajet = async (req: Request, res: Response) => {
     }
 };
 
-
-
 export const searchTrajets = async (req: Request, res: Response) => {
     try {
         // Valider les paramètres de requête avec le schéma Zod
@@ -532,63 +512,32 @@ export const searchTrajets2 = async (req: Request, res: Response) => {
     }
 };
 
-// export const getTrajetDriverss = async (req: Request, res: Response) => {
+export const updateStatusTrajet = async (req: Request, res: Response) => {
+    const { id } = req.params; // ID du trajet à mettre à jour
+    const { newStatus } = req.body;
 
-//     const { id } = req.params;
+    if (!newStatus) {
+        return res.status(400).json({
+            code: 400,
+            messages: 'New status is required',
+        });
+    }
 
-//     try {
+    try {
+        // Appel du service pour mettre à jour le statut du trajet
+        const updatedTrajet = await updateTrajetStatus(id, newStatus);
 
-//         const token = req.headers.authorization?.split(' ')[1];
-        
-//         if (!token) {
-//             return res.status(401).json({
-//                 code: 401,
-//                 messages: 'Token manquant',
-//             });
-//         }
+        // Préparation de la réponse
+        const response = {
+            code: 200,
+            messages: 'Trajet status updated successfully',
+            data: updatedTrajet,
+        };
 
-//         // Décoder le token
-//         const decodedToken = jwt.decode(token) as DecodedToken | null;
-
-//         if (!decodedToken) {
-
-//             throw new Error('Votre session a expiré, merci de vous reconnecter.');
-//         }
-        
-//         const id = decodedToken.id;
-
-//         getTrajetByIdSchema.parse({ id });
-
-//         const trajet = await trajetService.getDriverTrajet(id);
-
-//         if (trajet) {
-//             const response: BaseResponse<typeof trajet> = {
-//                 code: 200,
-//                 messages: 'Trajet retrieved successfully',
-//                 data: trajet,
-//             };
-//             res.json(response);
-//         } else {
-//             const response: BaseResponse<null> = {
-//                 code: 404,
-//                 messages: 'Trajet not found',
-//             };
-//             res.status(404).json(response);
-//         }
-//     } catch (error) {
-//         if (error instanceof z.ZodError) {
-//             const response: BaseResponse<null> = {
-//                 code: 400,
-//                 messages: error.errors.map(e => e.message).join(', '),
-//             };
-//             return res.status(400).json(response);
-//         }
-//         const response: BaseResponse<null> = {
-//             code: 500,
-//             messages: 'Internal server error',
-//         };
-//         res.status(500).json(response);
-//     }
-
-// };
+        return res.status(200).json(response);
+    } catch (error: unknown) {
+        console.error('Error in updateTrajetStatusController:', error);
+        return res.status(500).json({ code: 500, messages: 'Internal server error' });
+    }
+};
 

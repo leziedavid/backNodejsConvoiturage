@@ -203,8 +203,6 @@ export const getDriverTrajet = async (
     );
 };
 
-
-
 // Fonction pour vérifier si un point est entre deux autres points
 const isPointBetween = (point: { lat: number; lon: number }, start: { lat: number; lon: number }, end: { lat: number; lon: number }): boolean => {
     return (
@@ -214,7 +212,6 @@ const isPointBetween = (point: { lat: number; lon: number }, start: { lat: numbe
         point.lon <= Math.max(start.lon, end.lon)
     );
 };
-
 
 export const searchTrajetsService = async (filters: {
     
@@ -296,7 +293,6 @@ export const searchTrajetsService = async (filters: {
     }
 };
 
-
 export const searchTrajets = async (filters: {
     point_depart: { lat: number; lon: number };
     point_arrivee: { lat: number; lon: number };
@@ -345,4 +341,33 @@ export const searchTrajets = async (filters: {
 
 export const deleteTrajet = async (id: string): Promise<void> => {
     await prisma.trajet.delete({ where: { id } });
+};
+
+
+
+export const updateTrajetStatus = async (trajetId: string, newStatus: string): Promise<Trajet> => {
+    try {
+        // Vérifiez que le trajet existe
+        const existingTrajet = await prisma.trajet.findUnique({
+            where: { id: trajetId },
+        });
+
+        if (!existingTrajet) {
+            throw new Error('Trajet not found');
+        }
+
+        // Mettre à jour l'état du trajet
+        const updatedTrajet = await prisma.trajet.update({
+            where: { id: trajetId },
+            data: { etat_trajet: newStatus },
+        });
+
+        return updatedTrajet;
+    } catch (err: unknown) {
+        if (err instanceof Error) {
+            console.error('Error updating trajet status:', err);
+            throw new Error('Internal server error');
+        }
+        throw new Error('Internal server error');
+    }
 };

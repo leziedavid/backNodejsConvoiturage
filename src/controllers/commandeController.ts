@@ -454,6 +454,7 @@ export const updateCommandeStatus = async (req: Request, res: Response) => {
     }
 
 };
+
 export const updateCommandeUsersStatus = async (req: Request, res: Response) => {
     const { id } = req.params;
     try {
