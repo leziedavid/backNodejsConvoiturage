@@ -4,7 +4,7 @@
   "main": "dist/app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start:dev": "nodemon",
+    "start:dev": "nodemon --exec ts-node src/app.ts",
     "prisma:generate": "prisma generate",
     "start": "node dist/app.js"
   },
@@ -42,7 +42,7 @@
     "@types/nodemailer": "^6.4.15",
     "@types/swagger-ui-express": "^4.1.6",
     "@types/uuid": "^10.0.0",
-    "nodemon": "^3.1.4",
+    "nodemon": "^3.1.7",
     "prisma": "^5.19.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.6.2"
