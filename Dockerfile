@@ -9,6 +9,8 @@ COPY package*.json ./
 
 # Étape 4 : Installer les dépendances
 RUN npm install
+RUN npm install @prisma/client
+RUN npm install prisma --save-dev
 
 # Étape 5 : Copier le reste du code
 COPY . .
@@ -29,14 +31,17 @@ COPY --from=build /usr/src/app/package*.json ./
 # Étape 10 : Installer les dépendances en production
 RUN npm install --only=production
 
-# Étape 11 : Créer un volume pour le dossier uploads
+# Étape 11 : Générer les fichiers Prisma
+RUN npx prisma generate
+
+# Étape 12 : Créer un volume pour le dossier uploads
 VOLUME ["/usr/src/app/dist/uploads"]
 
-# Étape 12 : Vérifier si le dossier uploads existe et le créer s'il n'existe pas
+# Étape 13 : Vérifier si le dossier uploads existe et le créer s'il n'existe pas
 RUN mkdir -p ./dist/uploads
 
-# Étape 13 : Exposer le port de l'application (à adapter si nécessaire)
+# Étape 14 : Exposer le port de l'application (à adapter si nécessaire)
 EXPOSE 3000
 
-# Étape 14 : Commande pour démarrer l'application
+# Étape 15 : Commande pour démarrer l'application
 CMD ["node", "dist/app.js"]
