@@ -29,11 +29,11 @@ COPY --from=build /usr/src/app/package*.json ./
 # Étape 10 : Installer les dépendances en production
 RUN npm install --only=production
 
-# Étape 11 : Copier les uploads, mais seulement si le dossier n'existe pas
-COPY --from=build /usr/src/uploads ./uploads
+# Étape 11 : Copier le dossier uploads depuis l'étape de build
+COPY --from=build /usr/src/app/uploads ./dist/uploads
 
 # Étape 12 : Vérifier si le dossier uploads existe et le créer s'il n'existe pas
-RUN if [ ! -d ./uploads ]; then mkdir ./uploads; fi
+RUN mkdir -p ./dist/uploads
 
 # Étape 13 : Exposer le port de l'application (à adapter si nécessaire)
 EXPOSE 3000
