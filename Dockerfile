@@ -29,4 +29,4 @@ EXPOSE 3000
 USER node
 
 # Commande pour démarrer l'application
-CMD ["node", "dist/index.js"]
+CMD ["node", "dist/app.js"]
