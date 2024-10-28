@@ -26,17 +26,15 @@ WORKDIR /app
 COPY --from=builder /app/dist ./dist
 COPY package*.json ./
 
-# Installe uniquement les dépendances de production
+# Installe les dépendances de production
 RUN npm install --only=production
-
-# Génère les fichiers Prisma
-RUN npx prisma generate
 
 # Crée un volume pour le dossier uploads
 VOLUME ["/app/dist/uploads"]
+RUN mkdir -p ./dist/uploads
 
 # Expose le port que l'application va utiliser
-EXPOSE 4000
+EXPOSE 3000
 
 # Commande pour démarrer l'application
 CMD ["node", "dist/app.js"]
