@@ -7,7 +7,7 @@ WORKDIR /app
 # Copie le fichier package.json et package-lock.json
 COPY package*.json ./
 
-# Installe les dépendances (y compris devDependencies)
+# Installe les dépendances
 RUN npm install
 
 # Copie le code source
@@ -17,16 +17,16 @@ COPY . .
 RUN npm run build
 
 # Étape 2 : Création de l'image de production
-FROM node:18 AS production
+FROM node:18
 
 # Définit le répertoire de travail
 WORKDIR /app
 
 # Copie seulement les fichiers nécessaires de l'étape de construction
 COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/package*.json ./
+COPY package*.json ./
 
-# Installe uniquement les dépendances de production
+# Installe les dépendances de production
 RUN npm install --only=production
 
 # Génère les fichiers Prisma
