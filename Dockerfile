@@ -26,7 +26,7 @@ WORKDIR /app
 COPY --from=builder /app/dist ./dist
 COPY package*.json ./
 
-# Installe les dépendances de production
+# Installe uniquement les dépendances de production
 RUN npm install --only=production
 
 # Génère les fichiers Prisma
@@ -34,9 +34,6 @@ RUN npx prisma generate
 
 # Crée un volume pour le dossier uploads
 VOLUME ["/app/dist/uploads"]
-
-# Vérifie si le dossier uploads existe et le crée s'il n'existe pas
-RUN mkdir -p ./dist/uploads
 
 # Expose le port que l'application va utiliser
 EXPOSE 4000
