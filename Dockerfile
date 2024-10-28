@@ -30,7 +30,7 @@ COPY --from=build /usr/src/app/package*.json ./
 RUN npm install --only=production
 
 # Étape 11 : Copier les uploads, mais seulement si le dossier n'existe pas
-COPY --from=build /usr/src/app/uploads ./uploads
+COPY --from=build /usr/src/uploads ./uploads
 
 # Étape 12 : Vérifier si le dossier uploads existe et le créer s'il n'existe pas
 RUN if [ ! -d ./uploads ]; then mkdir ./uploads; fi
