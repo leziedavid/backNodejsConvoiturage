@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteTrajet = exports.searchTrajets = exports.searchTrajetsService = exports.getDriverTrajet = exports.getAllTrajets = exports.getTrajetById = exports.updateTrajetDetails = exports.updateTrajet = exports.createTrajet = void 0;
+exports.updateTrajetStatus = exports.deleteTrajet = exports.searchTrajets = exports.searchTrajetsService = exports.getDriverTrajet = exports.getAllTrajets = exports.getTrajetById = exports.updateTrajetDetails = exports.updateTrajet = exports.createTrajet = void 0;
 const geolib_1 = require("geolib");
 const Conn_1 = __importDefault(require("../Conn"));
 const trajetPaginate_1 = require("./allPaginations/trajetPaginate");
@@ -224,4 +224,29 @@ const deleteTrajet = (id) => __awaiter(void 0, void 0, void 0, function* () {
     yield Conn_1.default.trajet.delete({ where: { id } });
 });
 exports.deleteTrajet = deleteTrajet;
+const updateTrajetStatus = (trajetId, newStatus) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        // Vérifiez que le trajet existe
+        const existingTrajet = yield Conn_1.default.trajet.findUnique({
+            where: { id: trajetId },
+        });
+        if (!existingTrajet) {
+            throw new Error('Trajet not found');
+        }
+        // Mettre à jour l'état du trajet
+        const updatedTrajet = yield Conn_1.default.trajet.update({
+            where: { id: trajetId },
+            data: { etat_trajet: newStatus },
+        });
+        return updatedTrajet;
+    }
+    catch (err) {
+        if (err instanceof Error) {
+            console.error('Error updating trajet status:', err);
+            throw new Error('Internal server error');
+        }
+        throw new Error('Internal server error');
+    }
+});
+exports.updateTrajetStatus = updateTrajetStatus;
 //# sourceMappingURL=trajetService.js.map

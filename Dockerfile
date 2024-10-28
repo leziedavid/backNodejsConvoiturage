@@ -1,36 +1,42 @@
-# Étape 1 : Construction de l'application
-FROM node:18 AS builder
+# Étape 1 : Utiliser une image de base Node.js
+FROM node:18 AS build
 
-# Définit le répertoire de travail
-WORKDIR /app
+# Étape 2 : Définir le répertoire de travail
+WORKDIR /usr/src/app
 
-# Copie le fichier package.json et package-lock.json
+# Étape 3 : Copier les fichiers package.json et package-lock.json
 COPY package*.json ./
 
-# Installe les dépendances
+# Étape 4 : Installer les dépendances
 RUN npm install
 
-# Copie le code source
+# Étape 5 : Copier le reste du code
 COPY . .
 
-# Compile le code TypeScript
+# Étape 6 : Compiler le code TypeScript
 RUN npm run build
 
-# Étape 2 : Création de l'image de production
-FROM node:18
+# Étape 7 : Étape finale - utiliser une image Node.js légère pour la production
+FROM node:18 AS production
 
-# Définit le répertoire de travail
-WORKDIR /app
+# Étape 8 : Définir le répertoire de travail
+WORKDIR /usr/src/app
 
-# Copie seulement les fichiers nécessaires de l'étape de construction
-COPY --from=builder /app/dist ./dist
-COPY package*.json ./
+# Étape 9 : Copier les fichiers compilés et les dépendances depuis l'étape de build
+COPY --from=build /usr/src/app/dist ./dist
+COPY --from=build /usr/src/app/package*.json ./
 
-# Installe les dépendances de production
+# Étape 10 : Installer les dépendances en production
 RUN npm install --only=production
 
-# Expose le port que l'application va utiliser
+# Étape 11 : Copier les uploads, mais seulement si le dossier n'existe pas
+COPY --from=build /usr/src/app/uploads ./uploads
+
+# Étape 12 : Vérifier si le dossier uploads existe et le créer s'il n'existe pas
+RUN if [ ! -d ./uploads ]; then mkdir ./uploads; fi
+
+# Étape 13 : Exposer le port de l'application (à adapter si nécessaire)
 EXPOSE 3000
 
-# Commande pour démarrer l'application
+# Étape 14 : Commande pour démarrer l'application
 CMD ["node", "dist/app.js"]

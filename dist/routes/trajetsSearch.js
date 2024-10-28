@@ -25,7 +25,9 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const trajetController = __importStar(require("../controllers/trajetController"));
+const trajetController_1 = require("../controllers/trajetController");
 const router = (0, express_1.Router)();
 router.post('/', trajetController.searchTrajets);
+router.put('/:id', trajetController_1.updateStatusTrajet);
 exports.default = router;
 //# sourceMappingURL=trajetsSearch.js.map

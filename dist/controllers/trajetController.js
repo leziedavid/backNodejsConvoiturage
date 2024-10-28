@@ -35,11 +35,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.searchTrajets2 = exports.searchTrajets = exports.deleteTrajet = exports.getTrajetDriver = exports.getTrajetById = exports.getTrajets = exports.updateTrajetDetailsController = exports.updateTrajet = exports.createTrajet = void 0;
+exports.updateStatusTrajet = exports.searchTrajets2 = exports.searchTrajets = exports.deleteTrajet = exports.getTrajetDriver = exports.getTrajetById = exports.getTrajets = exports.updateTrajetDetailsController = exports.updateTrajet = exports.createTrajet = void 0;
 const trajetService = __importStar(require("../services/trajetService"));
 const zod_1 = require("zod");
 const trajetValidation_1 = require("../validation/trajetValidation");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const trajetService_1 = require("../services/trajetService");
 const createTrajet = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         // Valider les données de la requête
@@ -202,23 +203,6 @@ const getTrajets = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     }
 });
 exports.getTrajets = getTrajets;
-// export const getTrajets1 = async (req: Request, res: Response) => {
-//     try {
-//         const trajets = await trajetService.getTrajets();
-//         const response: BaseResponse<typeof trajets> = {
-//             code: 200,
-//             messages: 'Trajets retrieved successfully',
-//             data: trajets,
-//         };
-//         res.json(response);
-//     } catch (error) {
-//         const response: BaseResponse<null> = {
-//             code: 500,
-//             messages: 'Internal server error',
-//         };
-//         res.status(500).json(response);
-//     }
-// };
 const getTrajetById = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     try {
@@ -478,51 +462,30 @@ const searchTrajets2 = (req, res) => __awaiter(void 0, void 0, void 0, function*
     }
 });
 exports.searchTrajets2 = searchTrajets2;
-// export const getTrajetDriverss = async (req: Request, res: Response) => {
-//     const { id } = req.params;
-//     try {
-//         const token = req.headers.authorization?.split(' ')[1];
-//         if (!token) {
-//             return res.status(401).json({
-//                 code: 401,
-//                 messages: 'Token manquant',
-//             });
-//         }
-//         // Décoder le token
-//         const decodedToken = jwt.decode(token) as DecodedToken | null;
-//         if (!decodedToken) {
-//             throw new Error('Votre session a expiré, merci de vous reconnecter.');
-//         }
-//         const id = decodedToken.id;
-//         getTrajetByIdSchema.parse({ id });
-//         const trajet = await trajetService.getDriverTrajet(id);
-//         if (trajet) {
-//             const response: BaseResponse<typeof trajet> = {
-//                 code: 200,
-//                 messages: 'Trajet retrieved successfully',
-//                 data: trajet,
-//             };
-//             res.json(response);
-//         } else {
-//             const response: BaseResponse<null> = {
-//                 code: 404,
-//                 messages: 'Trajet not found',
-//             };
-//             res.status(404).json(response);
-//         }
-//     } catch (error) {
-//         if (error instanceof z.ZodError) {
-//             const response: BaseResponse<null> = {
-//                 code: 400,
-//                 messages: error.errors.map(e => e.message).join(', '),
-//             };
-//             return res.status(400).json(response);
-//         }
-//         const response: BaseResponse<null> = {
-//             code: 500,
-//             messages: 'Internal server error',
-//         };
-//         res.status(500).json(response);
-//     }
-// };
+const updateStatusTrajet = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id } = req.params; // ID du trajet à mettre à jour
+    const { newStatus } = req.body;
+    if (!newStatus) {
+        return res.status(400).json({
+            code: 400,
+            messages: 'New status is required',
+        });
+    }
+    try {
+        // Appel du service pour mettre à jour le statut du trajet
+        const updatedTrajet = yield (0, trajetService_1.updateTrajetStatus)(id, newStatus);
+        // Préparation de la réponse
+        const response = {
+            code: 200,
+            messages: 'Trajet status updated successfully',
+            data: updatedTrajet,
+        };
+        return res.status(200).json(response);
+    }
+    catch (error) {
+        console.error('Error in updateTrajetStatusController:', error);
+        return res.status(500).json({ code: 500, messages: 'Internal server error' });
+    }
+});
+exports.updateStatusTrajet = updateStatusTrajet;
 //# sourceMappingURL=trajetController.js.map

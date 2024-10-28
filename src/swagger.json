@@ -8,7 +8,7 @@
 
     "servers": [
         {
-            "url": "https://backend.covoitivoire.com/api/",
+            "url": "https://api.covoitivoire.com/api/",
             "description": "Serveur de production"
         },
         {

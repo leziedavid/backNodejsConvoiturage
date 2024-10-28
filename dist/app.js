@@ -98,6 +98,7 @@ app.use('/api/reponseConducteur', reponseConducteurRoutes_1.default);
 app.use('/api/auth', authRoutes_1.default);
 app.use('/api/arrets', arretRoutes_1.default);
 app.use('/api/search-trajets', trajetsSearch_1.default);
+app.use('/api/updateStatusTrajet', trajetsSearch_1.default);
 app.use('/api/vehicule', vehiculeRouter_1.default);
 app.use('/api/contact', contactRoutes_1.default);
 app.use('/api/faqs', faqRoutes_1.default);
