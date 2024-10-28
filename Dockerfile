@@ -20,4 +20,4 @@ RUN npm run build
 EXPOSE 3000
 
 # Commande pour démarrer l'application
-CMD ["node", "dist/api.js"]
+CMD ["node", "dist/app.js"]
