@@ -1,36 +1,23 @@
-# Étape 1 : Utiliser une image de base Node.js 18
-FROM node:18 AS builder
+# Utilise l'image officielle de Node.js version 18 comme image de base
+FROM node:18
 
-# Définir le répertoire de travail
+# Définit le répertoire de travail à /app
 WORKDIR /app
 
-# Copier les fichiers de package
+# Copie les fichiers package.json et package-lock.json pour installer les dépendances
 COPY package*.json ./
 
-# Installer les dépendances
+# Installe les dépendances de l'application
 RUN npm install
 
-# Copier le reste des fichiers de l'application
+# Copie tous les fichiers de l'application dans le conteneur
 COPY . .
 
-# Compiler le code TypeScript
+# Exécute la commande de build TypeScript
 RUN npm run build
 
-# Étape 2 : Création de l'image de production
-FROM node:18 AS production
-
-# Définir le répertoire de travail
-WORKDIR /app
-
-# Copier les fichiers nécessaires depuis l'étape de build
-COPY --from=builder /app/dist ./dist
-COPY package*.json ./
-
-# Installer uniquement les dépendances de production
-RUN npm install --only=production
-
-# Exposer le port sur lequel l'application écoutera
+# Expose le port 3000
 EXPOSE 3000
 
 # Commande pour démarrer l'application
-CMD ["node", "dist/app.js"]
+CMD ["node", "dist/api.js"]
