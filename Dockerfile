@@ -1,39 +1,35 @@
-# Étape 1 : Construction de l'application
+# Étape 1 : Utiliser une image de base Node.js 18
 FROM node:18 AS builder
 
-# Définit le répertoire de travail
+# Définir le répertoire de travail
 WORKDIR /app
 
-# Copie le fichier package.json et package-lock.json
+# Copier les fichiers de package
 COPY package*.json ./
 
-# Installe les dépendances
+# Installer les dépendances
 RUN npm install
 
-# Copie le code source
+# Copier le reste des fichiers de l'application
 COPY . .
 
-# Compile le code TypeScript
+# Compiler le code TypeScript
 RUN npm run build
 
 # Étape 2 : Création de l'image de production
-FROM node:18
+FROM node:18 AS production
 
-# Définit le répertoire de travail
+# Définir le répertoire de travail
 WORKDIR /app
 
-# Copie seulement les fichiers nécessaires de l'étape de construction
+# Copier les fichiers nécessaires depuis l'étape de build
 COPY --from=builder /app/dist ./dist
 COPY package*.json ./
 
-# Installe les dépendances de production
+# Installer uniquement les dépendances de production
 RUN npm install --only=production
 
-# Crée un volume pour le dossier uploads
-VOLUME ["/app/dist/uploads"]
-RUN mkdir -p ./dist/uploads
-
-# Expose le port que l'application va utiliser
+# Exposer le port sur lequel l'application écoutera
 EXPOSE 3000
 
 # Commande pour démarrer l'application
