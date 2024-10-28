@@ -1,47 +1,45 @@
-# Étape 1 : Utiliser une image de base Node.js
-FROM node:18 AS build
+# Étape 1 : Construction de l'application
+FROM node:18 AS builder
 
-# Étape 2 : Définir le répertoire de travail
-WORKDIR /usr/src/app
+# Définit le répertoire de travail
+WORKDIR /app
 
-# Étape 3 : Copier les fichiers package.json et package-lock.json
+# Copie le fichier package.json et package-lock.json
 COPY package*.json ./
 
-# Étape 4 : Installer les dépendances
+# Installe les dépendances (y compris devDependencies)
 RUN npm install
-RUN npm install @prisma/client
-RUN npm install prisma --save-dev
 
-# Étape 5 : Copier le reste du code
+# Copie le code source
 COPY . .
 
-# Étape 6 : Compiler le code TypeScript
+# Compile le code TypeScript
 RUN npm run build
 
-# Étape 7 : Étape finale - utiliser une image Node.js légère pour la production
+# Étape 2 : Création de l'image de production
 FROM node:18 AS production
 
-# Étape 8 : Définir le répertoire de travail
-WORKDIR /usr/src/app
+# Définit le répertoire de travail
+WORKDIR /app
 
-# Étape 9 : Copier les fichiers compilés et les dépendances depuis l'étape de build
-COPY --from=build /usr/src/app/dist ./dist
-COPY --from=build /usr/src/app/package*.json ./
+# Copie seulement les fichiers nécessaires de l'étape de construction
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/package*.json ./
 
-# Étape 10 : Installer les dépendances en production
+# Installe uniquement les dépendances de production
 RUN npm install --only=production
 
-# Étape 11 : Générer les fichiers Prisma
+# Génère les fichiers Prisma
 RUN npx prisma generate
 
-# Étape 12 : Créer un volume pour le dossier uploads
-VOLUME ["/usr/src/app/dist/uploads"]
+# Crée un volume pour le dossier uploads
+VOLUME ["/app/dist/uploads"]
 
-# Étape 13 : Vérifier si le dossier uploads existe et le créer s'il n'existe pas
+# Vérifie si le dossier uploads existe et le crée s'il n'existe pas
 RUN mkdir -p ./dist/uploads
 
-# Étape 14 : Exposer le port de l'application (à adapter si nécessaire)
-EXPOSE 3000
+# Expose le port que l'application va utiliser
+EXPOSE 4000
 
-# Étape 15 : Commande pour démarrer l'application
+# Commande pour démarrer l'application
 CMD ["node", "dist/app.js"]
