@@ -1,5 +1,5 @@
-# Utilise l'image officielle de Node.js version 18.19.0
-FROM node:18.19.0
+# Utilise l'image officielle de Node.js version v18.20.4
+FROM node:v18.20.4
 
 # Définit le répertoire de travail dans le conteneur
 WORKDIR /usr/src/app
