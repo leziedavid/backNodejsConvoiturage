@@ -16,6 +16,9 @@ COPY package*.json ./
 # Installe les dépendances
 RUN npm install
 
+# Génère le client Prisma
+RUN npx prisma generate
+
 # Copie le reste de l'application (y compris src et autres fichiers)
 COPY . .
 
