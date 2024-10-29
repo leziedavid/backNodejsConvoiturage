@@ -1,32 +1,23 @@
-# Utilise l'image officielle de Node.js version 18 comme image de base
-FROM node:18
+# Utilise l'image officielle de Node.js
+FROM node:22.9.0
 
-# Définit le répertoire de travail à /app
-WORKDIR /app
+# Définit le répertoire de travail dans le conteneur
+WORKDIR /usr/src/app
 
-# Copie des fichiers de dépendance
+# Copie package.json et package-lock.json pour installer les dépendances
 COPY package*.json ./
 
 # Installe les dépendances
 RUN npm install
 
-# Copie tous les fichiers de l'application dans le conteneur
+# Copie le reste de l'application
 COPY . .
 
-# Vérifie que @prisma/client est installé
-RUN npm list @prisma/client
+# Compile le code TypeScript
+RUN npx tsc
 
-# Exécute la commande de build TypeScript
-RUN npm run build
-
-# Change les permissions pour éviter les problèmes d'exécution
-RUN chown -R node:node /app
-
-# Expose le port 3000
+# Expose le port que ton application utilise
 EXPOSE 3000
-
-# Définit l'utilisateur non-root
-USER node
 
 # Commande pour démarrer l'application
 CMD ["node", "dist/app.js"]
