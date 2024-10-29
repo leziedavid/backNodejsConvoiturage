@@ -1,0 +1,21 @@
+# Ignorer les répertoires de dépendances
+node_modules
+dist
+
+# Ignorer les fichiers de configuration de l'éditeur
+.vscode/
+.idea/
+
+# Ignorer les fichiers temporaires et de log
+*.log
+*.tmp
+
+# Ignorer les fichiers d'environnement
+# .env
+
+# Ignorer les fichiers de versionnement
+.git
+.gitignore
+
+# Ignorer les fichiers de compilation TypeScript
+*.tsbuildinfo
