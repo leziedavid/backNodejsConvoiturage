@@ -1,5 +1,5 @@
-# Utilise l'image officielle de Node.js
-FROM node:22.9.0
+# Utilise l'image officielle de Node.js version 18.19.0
+FROM node:18.19.0
 
 # Définit le répertoire de travail dans le conteneur
 WORKDIR /usr/src/app
@@ -13,11 +13,11 @@ RUN npm install
 # Copie le reste de l'application
 COPY . .
 
-# Compile le code TypeScript
+# Compile le code TypeScript si nécessaire
 RUN npx tsc
 
 # Expose le port que ton application utilise
-EXPOSE 3000
+EXPOSE 4000
 
 # Commande pour démarrer l'application
 CMD ["node", "dist/app.js"]
