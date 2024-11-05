@@ -453,3 +453,62 @@ export const searchUsersController = async (req: Request, res: Response) => {
         });
     }
 };
+
+
+
+export const getUserWalletById = async (req: Request, res: Response) => {
+    const { id } = req.params;
+
+    try {
+        // Valider les paramètres de la requête
+        getUserByIdSchema.parse({ id });
+
+        const token = req.headers.authorization?.split(' ')[1];
+        if (!token) {
+            return res.status(401).json({
+                code: 401,
+                messages: 'Token manquant',
+            });
+        }
+
+        const decodedToken = jwt.decode(token) as { exp: number } | null;
+        if (decodedToken && decodedToken.exp * 1000 < Date.now()) {
+            return res.status(401).json({
+                code: 401,
+                messages: 'Token expiré, veuillez vous reconnecter pour accéder à la ressource',
+            });
+        }
+
+        const wallet = await userService.getUserWalletById(id); // Appel au service pour récupérer le wallet
+
+        if (wallet) {
+            const response: BaseResponse<typeof wallet> = {
+                code: 200,
+                messages: 'Wallet retrieved successfully',
+                data: wallet,
+            };
+            res.json(response);
+        } else {
+            const response: BaseResponse<null> = {
+                code: 404,
+                messages: 'Wallet not found for this user',
+            };
+            res.status(404).json(response);
+        }
+        
+    } catch (error) {
+        if (error instanceof z.ZodError) {
+            // Erreurs de validation Zod
+            const response: BaseResponse<null> = {
+                code: 400,
+                messages: error.errors.map(e => e.message).join(', '),
+            };
+            return res.status(400).json(response);
+        }
+        const response: BaseResponse<null> = {
+            code: 500,
+            messages: 'Internal server error',
+        };
+        res.status(500).json(response);
+    }
+};

@@ -5,4 +5,5 @@ import upload from '../middleware/multerConfig';
 
 const router = Router();
 router.get('/:id', userController.getUserById);
+router.get('/:id/:walle', userController.getUserWalletById);
 export default router;

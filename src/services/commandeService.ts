@@ -2,6 +2,7 @@ import { Commande } from '@prisma/client';
 import prisma from '../Conn';
 import { paginate, PaginationOptions } from './allPaginations/odersPaginate';
 import { sendEmail } from './mailService';
+import { sendEmailViaApi } from './sendEmailViaApi';
 
 
 const generateCommandeCode = (): string => {
@@ -394,16 +395,26 @@ export const updateCommandeStatus = async (commandeId: string, newStatus: string
                 throw new Error('Invalid status');
         }
 
-        // Envoyer un e-mail à l'utilisateur
-        await sendEmail({
-            to: utilisateur.email,
-            subject,
-            text,
-            html, // Inclure le contenu HTML dans l'e-mail
-        });
+        // Appel à la fonction pour envoyer l'email
+        // const senderId = 'contact@tarafe.com';
+        const senderId = 'admin@covoitivoire.com';
+        const userId = utilisateur.id; // Assurez-vous que utilisateur existe et a un id
+        const receiver = utilisateur.email; // Assurez-vous que utilisateur existe et a un email
+
+        await sendEmailViaApi(senderId, userId, subject, receiver, text);
+
+        // // Envoyer un e-mail à l'utilisateur
+        // await sendEmail({
+        //     to: utilisateur.email,
+        //     subject,
+        //     text,
+        //     html, // Inclure le contenu HTML dans l'e-mail
+        // });
 
         return updatedCommande;
+
     } catch (err: unknown) {
+
         if (err instanceof Error) {
             console.error('Error updating commande status:', err);
             throw new Error('Internal server error');

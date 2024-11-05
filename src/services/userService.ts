@@ -1,6 +1,6 @@
 // src/services/userService.ts
 
-import { Prisma, User } from '@prisma/client';
+import { Prisma, User, Wallet } from '@prisma/client';
 import prisma from '../Conn';
 import { paginate, PaginationOptions } from './allPaginations/usersPaginate';
 const bcrypt = require('bcryptjs');
@@ -150,6 +150,7 @@ export const getUsers = async (
 };
 
 
+
 export const getUserById = async (id: string): Promise<User | null> => {
     return prisma.user.findUnique({
         where: { id },
@@ -159,9 +160,23 @@ export const getUserById = async (id: string): Promise<User | null> => {
             reponsesConducteur: true,
             commandesConducteur: true,
             vehicules: true,
-            rechargements: true
+            rechargements: true,
+            wallet: true
         }
     });
+};
+
+export const getUserWalletById = async (id: string): Promise<Wallet | null> => {
+    const user = await prisma.user.findUnique({
+        where: { id },
+        include: {
+            wallet: true // Inclure seulement le wallet,
+            // vehicules: true, // Inclure seulement le vehicules,
+
+        }
+    });
+
+    return user ? user.wallet : null; // Retourner le wallet ou null si l'utilisateur n'existe pas
 };
 
 
