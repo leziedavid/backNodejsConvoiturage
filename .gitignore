@@ -1,3 +1,8 @@
-node_modules
-# Keep environment variables out of version control
+# Ignore node_modules directory
+node_modules/
+
+# Ignore environment variables file (uncomment if you want to ignore the .env file)
 # .env
+
+# Ignore VS Code workspace settings (optional, if you use VS Code)
+.vscode/
