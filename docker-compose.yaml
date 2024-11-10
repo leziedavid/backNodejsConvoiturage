@@ -22,7 +22,7 @@ services:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=mydb
     volumes:
-      - backnodejsconvoiturage_pgdata:/var/lib/postgresql/data  # Volume monté ici
+      - backnodejsconvoiturage_pg_data:/var/lib/postgresql/data  # Volume persistant
     ports:
       - "5432:5432"
     networks:
@@ -35,5 +35,5 @@ networks:
     external: true
 
 volumes:
-  backnodejsconvoiturage_pgdata:
-    driver: local  # Cette ligne doit être correctement imbriquée sous "backnodejsconvoiturage_pgdata"
+  backnodejsconvoiturage_pg_data:
+    driver: local  # Assure que le volume persiste entre les redémarrages
