@@ -403,13 +403,13 @@ export const updateCommandeStatus = async (commandeId: string, newStatus: string
 
         await sendEmailViaApi(senderId, userId, subject, receiver, text);
 
-        // // Envoyer un e-mail à l'utilisateur
-        // await sendEmail({
-        //     to: utilisateur.email,
-        //     subject,
-        //     text,
-        //     html, // Inclure le contenu HTML dans l'e-mail
-        // });
+        // Envoyer un e-mail à l'utilisateur
+        await sendEmail({
+            to: utilisateur.email,
+            subject,
+            text,
+            html, // Inclure le contenu HTML dans l'e-mail
+        });
 
         return updatedCommande;
 
