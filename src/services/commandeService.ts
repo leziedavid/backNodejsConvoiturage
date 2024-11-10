@@ -402,14 +402,13 @@ export const updateCommandeStatus = async (commandeId: string, newStatus: string
         const receiver = utilisateur.email; // Assurez-vous que utilisateur existe et a un email
 
         await sendEmailViaApi(senderId, userId, subject, receiver, text);
-
         // Envoyer un e-mail à l'utilisateur
-        await sendEmail({
-            to: utilisateur.email,
-            subject,
-            text,
-            html, // Inclure le contenu HTML dans l'e-mail
-        });
+        // await sendEmail({
+        //     to: utilisateur.email,
+        //     subject,
+        //     text,
+        //     html, // Inclure le contenu HTML dans l'e-mail
+        // });
 
         return updatedCommande;
 
