@@ -17,7 +17,7 @@ services:
 
   postgresql:
     container_name: ms_pg_sql  # Nom du conteneur PostgreSQL
-    image: postgres:16  # Utilisation de l'image officielle PostgreSQL version 16
+    image: postgres:15  # Utilisation de l'image officielle PostgreSQL version 15
     environment:
       - POSTGRES_USER=postgres  # Utilisateur PostgreSQL
       - POSTGRES_PASSWORD=postgres  # Mot de passe PostgreSQL
