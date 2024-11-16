@@ -37,4 +37,5 @@ networks:
 
 volumes:
   pg_data:
+    name: pg_data  # Spécifie explicitement le nom du volume, sans préfixe
     driver: local  # Volume persistant local pour les données PostgreSQL
