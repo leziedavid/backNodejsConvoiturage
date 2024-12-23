@@ -3,7 +3,7 @@ import { Request, Response } from 'express';
 import { BaseResponse } from '../interfaces/BaseResponse';
 import * as userService from '../services/userService';
 import jwt from 'jsonwebtoken';
-import { z } from 'zod';
+import { z, ZodError } from 'zod';
 import { createUserSchema, getUserByIdSchema, updateMdp, updateUserSchema } from '../validation/userValidation';
 import { PaginationOptions } from '../services/allPaginations/usersPaginate';
 
@@ -23,14 +23,13 @@ const handleError = (error: unknown): BaseResponse<null> => {
     };
 };
 
+
 export const createUser = async (req: Request, res: Response) => {
     try {
         // Valider les données de la requête
         const parsedBody = createUserSchema.parse(req.body);
-
-        // Utiliser le service pour créer un utilisateur
-        const newUser = await userService.createUser(parsedBody, req.file, baseUrl);
-
+        const fileUrl = req.body.fileUrl; // Récupérer l'URL de l'image
+        const newUser = await userService.createUser(parsedBody, fileUrl, baseUrl);
         const response: BaseResponse<typeof newUser> = {
             code: 201,
             messages: 'User created successfully',
@@ -38,7 +37,7 @@ export const createUser = async (req: Request, res: Response) => {
         };
         res.status(201).json(response);
     } catch (error) {
-        if (error instanceof z.ZodError) {
+        if (error instanceof ZodError) {
             // Erreurs de validation Zod
             const response: BaseResponse<null> = {
                 code: 400,
@@ -59,10 +58,8 @@ export const updateUser = async (req: Request, res: Response) => {
     try {
         // Valider les données de la requête
         const parsedBody = updateUserSchema.parse(req.body);
-
-        // Utiliser le service pour mettre à jour un utilisateur
-        const updatedUser = await userService.updateUser(req.params.id, parsedBody, req.file, baseUrl);
-
+        const fileUrl = req.body.fileUrl; // Récupérer l'URL de l'image
+        const updatedUser = await userService.updateUser(req.params.id, parsedBody, fileUrl, baseUrl);
         const response: BaseResponse<typeof updatedUser> = {
             code: 200,
             messages: 'User updated successfully',
@@ -70,7 +67,7 @@ export const updateUser = async (req: Request, res: Response) => {
         };
         res.status(200).json(response);
     } catch (error) {
-        if (error instanceof z.ZodError) {
+        if (error instanceof ZodError) {
             // Erreurs de validation Zod
             const response: BaseResponse<null> = {
                 code: 400,
@@ -86,6 +83,84 @@ export const updateUser = async (req: Request, res: Response) => {
         res.status(500).json(response);
     }
 };
+
+// Exemple pour l'upload de plusieurs fichiers
+// export const uploadMultipleFiles = async (req: Request, res: Response) => {
+//     try {
+//         const fileUrls = req.body.fileUrls; // Pour plusieurs fichiers
+
+//         // Traiter les URLs des fichiers
+//         res.status(200).json({ message: 'Files uploaded successfully', fileUrls });
+//     } catch (error) {
+//         res.status(500).json({ message: 'Error uploading files', error: error.message });
+//     }
+// };
+
+
+// export const createUser1 = async (req: Request, res: Response) => {
+//     try {
+//         // Valider les données de la requête
+//         const parsedBody = createUserSchema.parse(req.body);
+
+//         // Utiliser le service pour créer un utilisateur
+//         const newUser = await userService.createUser(parsedBody, req.file, baseUrl);
+
+//         const response: BaseResponse<typeof newUser> = {
+//             code: 201,
+//             messages: 'User created successfully',
+//             data: newUser,
+//         };
+//         res.status(201).json(response);
+//     } catch (error) {
+//         if (error instanceof z.ZodError) {
+//             // Erreurs de validation Zod
+//             const response: BaseResponse<null> = {
+//                 code: 400,
+//                 messages: error.errors.map(e => e.message).join(', '),
+//             };
+//             return res.status(400).json(response);
+//         }
+//         console.error(error);
+//         const response: BaseResponse<null> = {
+//             code: 500,
+//             messages: 'Internal server error',
+//         };
+//         res.status(500).json(response);
+//     }
+// };
+
+// export const updateUser1 = async (req: Request, res: Response) => {
+//     try {
+//         // Valider les données de la requête
+//         const parsedBody = updateUserSchema.parse(req.body);
+
+//         // Utiliser le service pour mettre à jour un utilisateur
+//         const updatedUser = await userService.updateUser(req.params.id, parsedBody, req.file, baseUrl);
+
+//         const response: BaseResponse<typeof updatedUser> = {
+//             code: 200,
+//             messages: 'User updated successfully',
+//             data: updatedUser,
+//         };
+//         res.status(200).json(response);
+//     } catch (error) {
+//         if (error instanceof z.ZodError) {
+//             // Erreurs de validation Zod
+//             const response: BaseResponse<null> = {
+//                 code: 400,
+//                 messages: error.errors.map(e => e.message).join(', '),
+//             };
+//             return res.status(400).json(response);
+//         }
+//         console.error(error);
+//         const response: BaseResponse<null> = {
+//             code: 500,
+//             messages: 'Internal server error',
+//         };
+//         res.status(500).json(response);
+//     }
+// };
+
 export const updateUserMdp = async (req: Request, res: Response) => {
     try {
         // Valider les données de la requête

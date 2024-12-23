@@ -14,7 +14,8 @@ interface UserStatistics {
 }
 
 // Fonction pour créer un utilisateur
-export const createUser = async (userData: any, file: Express.Multer.File | undefined, baseUrl: string): Promise<User> => {
+// file: Express.Multer.File | undefined,
+export const createUser = async (userData: any, fileUrl: string | undefined, baseUrl: string): Promise<User> => {
     const { password, role = 'user', verification_status = 'pending', currency_id, ...restOfData } = userData;
 
     if (!password) throw new Error('Password is required');
@@ -23,9 +24,11 @@ export const createUser = async (userData: any, file: Express.Multer.File | unde
     const passwordHash = await bcrypt.hash(password, salt);
 
     let photoUrl: string | null = null;
-    if (file) {
-        photoUrl = `${baseUrl}/uploads/${file.filename}`;
+    if (fileUrl) {
+        // photoUrl = `${baseUrl}/uploads/${file.filename}`;
+        photoUrl = fileUrl;
     }
+    
 
     // Création de l'utilisateur
     const newUser = await prisma.user.create({
@@ -52,6 +55,36 @@ export const createUser = async (userData: any, file: Express.Multer.File | unde
     return newUser;
 };
 
+
+export const updateUser = async (userId: string, userData: any, fileUrl: string | undefined, baseUrl: string): Promise<User> => {
+    const { password, verification_status, ...restOfData } = userData;
+
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    if (!user) throw new Error('User not found');
+
+    const updateData: Prisma.UserUpdateInput = { ...restOfData };
+
+    if (password) {
+        const salt = await bcrypt.genSalt(10);
+        updateData.password_hash = await bcrypt.hash(password, salt);
+    }
+
+    if (fileUrl) {
+        updateData.photo_url = fileUrl;
+        // updateData.photo_url = `${baseUrl}/uploads/${file.filename}`;
+    }
+
+    if (verification_status) {
+        updateData.verification_status = verification_status;
+    }
+
+    return prisma.user.update({
+        where: { id: userId },
+        data: updateData,
+    });
+};
+
+
 export const createUser1 = async (userData: any, file: Express.Multer.File | undefined, baseUrl: string): Promise<User> => {
     const { password, verification_status = 'pending', ...restOfData } = userData;
 
@@ -72,33 +105,6 @@ export const createUser1 = async (userData: any, file: Express.Multer.File | und
             photo_url: photoUrl,
             verification_status,
         },
-    });
-};
-
-export const updateUser = async (userId: string, userData: any, file: Express.Multer.File | undefined, baseUrl: string): Promise<User> => {
-    const { password, verification_status, ...restOfData } = userData;
-
-    const user = await prisma.user.findUnique({ where: { id: userId } });
-    if (!user) throw new Error('User not found');
-
-    const updateData: Prisma.UserUpdateInput = { ...restOfData };
-
-    if (password) {
-        const salt = await bcrypt.genSalt(10);
-        updateData.password_hash = await bcrypt.hash(password, salt);
-    }
-
-    if (file) {
-        updateData.photo_url = `${baseUrl}/uploads/${file.filename}`;
-    }
-
-    if (verification_status) {
-        updateData.verification_status = verification_status;
-    }
-
-    return prisma.user.update({
-        where: { id: userId },
-        data: updateData,
     });
 };
 

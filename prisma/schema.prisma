@@ -6,13 +6,20 @@
 
 generator client {
   provider = "prisma-client-js"
-    binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+    // binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
 
 }
 
+// datasource db {
+//   provider = "postgresql"
+//   url      = env("DATABASE_URL")
+// }
+
+
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DIRECT_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 // schema.prisma
@@ -142,6 +149,7 @@ model Vehicule {
   date_modification DateTime @updatedAt
   utilisateur       User     @relation("UserVehicules", fields: [utilisateur_id], references: [id])
   trajets           Trajet[] @relation("TrajetVehicule") // Relation inverse avec Trajet
+  Image Image[]
 }
 
 // schema.prisma
@@ -217,4 +225,11 @@ model Solde {
 
   user        User       @relation("UserSoldes", fields: [user_id], references: [id])
   commande    Commande   @relation("CommandeSoldes", fields: [commandeId], references: [id])
+}
+
+model Image {
+  id         String   @id @default(uuid())
+  url        String
+  vehiculeId String
+  vehicule   Vehicule @relation(fields: [vehiculeId], references: [id])
 }
