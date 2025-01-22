@@ -5,10 +5,10 @@ import { createClient } from '@supabase/supabase-js';
 import fs from 'fs';
 
 // Initialiser le client Supabase avec les informations d'environnement
-const supabase = createClient(
+const supabse = createClient(
     process.env.SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-    // process.env.SUPABASE_SERVICE_ROLE_KEY!
+    // process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
 // Configuration de multer pour accepter un fichier unique
@@ -33,7 +33,7 @@ const uploadToSupabase = async (filePath: string, filename: string) => {
     const fileContent = fs.readFileSync(filePath);
 
     // Uploader le fichier vers Supabase Storage dans le bucket "images"
-    const { data, error } = await supabase.storage
+    const { data, error } = await supabse.storage
         .from(process.env.SUPABASE_BUCKET_NAME!)
         .upload(filename, fileContent, {
             contentType: 'image/jpeg', // Ajustez le type MIME en fonction du fichier
