@@ -27,7 +27,7 @@ RUN rm -rf ./src
 FROM node:18-alpine
 
 # Installe libssl1.1 pour résoudre l'erreur liée à Prisma
-RUN apk add --no-cache libssl1.1
+RUN apk add --no-cache libssl3
 
 # Crée le répertoire de travail dans le conteneur
 WORKDIR /home/node/app
